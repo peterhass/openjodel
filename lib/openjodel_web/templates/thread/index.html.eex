@@ -1,0 +1,14 @@
+<h2>Threads</h2>
+<%= link "[New Thread]", to: thread_path(@conn, :new) %>
+<%= for thread <- @threads do %>
+  <h3>
+    <small>
+      <%= link "[x]", to: thread_path(@conn, :delete, thread.id), data: [confirm: "Really?"], method: :delete %>
+    </small>
+    <%= thread.inserted_at |> Calendar.Strftime.strftime!("%d.%m.%Y %H:%M") %>
+  </h3>
+  <p><%= thread.message %></p>
+  <p>
+    <%= link "#{Enum.count(thread.children)} comments", to: '/' %>
+  </p>
+<% end %>
