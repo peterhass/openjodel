@@ -1,0 +1,11 @@
+<h2>Posts</h2>
+<%= link "[New Post]", to: posts_path(@conn, :new) %>
+<%= for post <- @posts do %>
+  <h3>
+    <small>
+      <%= link "[x]", to: posts_path(@conn, :delete, post.id), data: [confirm: "Really?"], method: :delete %>
+    </small>
+    <%= post.inserted_at |> Calendar.Strftime.strftime!("%d.%m.%Y %H:%M") %>
+  </h3>
+  <p><%= post.message %></p>
+<% end %>
