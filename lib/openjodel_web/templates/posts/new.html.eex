@@ -1,6 +1,6 @@
 <h2>Add new post</h2>
 
-<%= form_for @changeset, posts_path(@conn, :create), fn f -> %>
+<%= form_for @changeset, thread_posts_path(@conn, :create, @thread_id), fn f -> %>
   <div class="form-group">
     <%= label f, :message, class: "control-label" %>
     <%= text_input f, :message, class: "form-control" %>

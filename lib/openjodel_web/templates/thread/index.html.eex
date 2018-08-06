@@ -9,6 +9,6 @@
   </h3>
   <p><%= thread.message %></p>
   <p>
-    <%= link "#{Enum.count(thread.children)} comments", to: '/' %>
+    <%= link "#{Enum.count(thread.children)} comments", to: thread_posts_path(@conn, :index, thread.id) %>
   </p>
 <% end %>

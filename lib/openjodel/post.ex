@@ -23,5 +23,11 @@ defmodule Openjodel.Post do
     from p in query, where: is_nil(p.parent_id)
   end
 
+  def from_parent(query, parent_id) do
+    import Ecto.Query
+    from p in query, where: p.parent_id == ^parent_id
+  end
+
+
   
 end

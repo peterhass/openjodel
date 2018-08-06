@@ -18,12 +18,8 @@ defmodule OpenjodelWeb.Router do
 
     get "/", PageController, :index
     resources "/threads", ThreadController do
-      #      resources "/posts", PostsController
-      end
-    
-    resources "/posts", PostsController
-
-
+      resources "/posts", PostsController
+    end
   end
 
   # Other scopes may use custom stacks.

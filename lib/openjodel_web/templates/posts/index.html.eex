@@ -1,9 +1,10 @@
+<%= link "[Threads]", to: thread_path(@conn, :index) %>
 <h2>Posts</h2>
-<%= link "[New Post]", to: posts_path(@conn, :new) %>
-<%= for post <- @posts do %>
+<%= link "[New Post]", to: thread_posts_path(@conn, :new, @thread_id) %>
+<%= for post <- [@thread |@posts] do %>
   <h3>
     <small>
-      <%= link "[x]", to: posts_path(@conn, :delete, post.id), data: [confirm: "Really?"], method: :delete %>
+      <%= link "[x]", to: thread_posts_path(@conn, :delete, @thread_id, post.id), data: [confirm: "Really?"], method: :delete %>
     </small>
     <%= post.inserted_at |> Calendar.Strftime.strftime!("%d.%m.%Y %H:%M") %>
   </h3>
