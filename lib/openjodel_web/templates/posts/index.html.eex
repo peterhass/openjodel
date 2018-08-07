@@ -7,6 +7,22 @@
       <%= link "[x]", to: thread_posts_path(@conn, :delete, @thread_id, post.id), data: [confirm: "Really?"], method: :delete %>
     </small>
     <%= post.inserted_at |> Calendar.Strftime.strftime!("%d.%m.%Y %H:%M") %>
-  </h3>
+    [
+    <%= post.votings |> Enum.map(fn vote -> vote.score end) |> IO.inspect |> Enum.sum %>
+    ]
+
+  </h3> 
+  <p>
+    <%= form_for @upvote_changeset, thread_posts_voting_path(@conn, :create, @thread_id, post.id), fn f-> %>
+      <%= hidden_input(f, :score) %>
+      <%= submit "upvote", class: "btn btn-primary" %>
+    <% end %>
+
+    <%= form_for @downvote_changeset, thread_posts_voting_path(@conn, :create, @thread_id, post.id), fn f-> %>
+      <%= hidden_input(f, :score) %>
+      <%= submit "downvote", class: "btn btn-primary" %>
+    <% end %>
+
+  </p>
   <p><%= post.message %></p>
 <% end %>

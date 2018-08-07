@@ -1,13 +1,21 @@
 defmodule OpenjodelWeb.PostsController do
   use OpenjodelWeb, :controller
-  alias Openjodel.{Repo, Post}
+  alias Openjodel.{Repo, Post, Voting}
   import Ecto.Query
 
   def index(conn, %{"thread_id" => thread_id} = _params) do
-    posts = Post |> Post.from_parent(thread_id) |> Repo.all
-    thread = Repo.get!(Post, thread_id)
+    posts = Post |> Post.from_parent(thread_id) |> from(preload: [:votings]) |> Repo.all
+    thread = Post |> from(preload: [:votings]) |> Repo.get!(thread_id)
 
-    render conn, "index.html", posts: posts, thread_id: thread_id, thread: thread
+    upvote_changeset = Voting.positive_voting |> Voting.changeset(%{})
+    downvote_changeset = Voting.negative_voting |> Voting.changeset(%{})
+
+    render conn, "index.html", 
+      posts: posts, 
+      thread_id: thread_id, 
+      thread: thread,
+      downvote_changeset: downvote_changeset,
+      upvote_changeset: upvote_changeset
   end
 
   def new(conn, %{"thread_id" => thread_id} = _params) do
