@@ -1,7 +1,7 @@
 defmodule Openjodel.Post do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Openjodel.Post
+  alias Openjodel.{Post, Voting}
 
   schema "posts" do
     field :message, :string
@@ -9,6 +9,7 @@ defmodule Openjodel.Post do
 
     has_many :children, Post, foreign_key: :parent_id
     belongs_to :parent, Post
+    has_many :votings, Voting
   end
 
   def changeset(%Post{} = post, attrs) do

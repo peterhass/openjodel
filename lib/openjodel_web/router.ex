@@ -18,7 +18,11 @@ defmodule OpenjodelWeb.Router do
 
     get "/", PageController, :index
     resources "/threads", ThreadController do
-      resources "/posts", PostsController
+      resources "/posts", PostsController do
+        #        resources "/votings", VotingController
+      end
+
+      resources "/votings", VotingController
     end
   end
 
