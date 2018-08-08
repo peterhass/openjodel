@@ -11,12 +11,12 @@
     ]
   </h3>
   <p>
-    <%= form_for @upvote_changeset, thread_voting_path(@conn, :create, thread.id), fn f-> %>
+    <%= form_for @voting_form.upvote_changeset, thread_voting_path(@conn, :create, thread.id), fn f-> %>
       <%= hidden_input(f, :score) %>
       <%= submit "upvote", class: "btn btn-primary" %>
     <% end %>
 
-    <%= form_for @downvote_changeset, thread_voting_path(@conn, :create, thread.id), fn f-> %>
+    <%= form_for @voting_form.downvote_changeset, thread_voting_path(@conn, :create, thread.id), fn f-> %>
       <%= hidden_input(f, :score) %>
       <%= submit "downvote", class: "btn btn-primary" %>
     <% end %>
