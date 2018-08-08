@@ -18,6 +18,10 @@ defmodule Openjodel.Post do
     |> validate_required([:message, :inserted_at])
   end
 
+  def post_to_insert_now(%Post{} = post \\ %Post{}) do
+    %{post | inserted_at: Calendar.DateTime.now_utc}
+  end
+
 
   def parents(query) do
     import Ecto.Query

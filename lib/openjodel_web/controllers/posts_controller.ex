@@ -4,9 +4,10 @@ defmodule OpenjodelWeb.PostsController do
   alias OpenjodelWeb.{PostsHelper}
   import Ecto.Query
 
-  def index(conn, %{"thread_id" => thread_id} = _params) do
-    posts = Post |> Post.from_parent(thread_id) |> from(preload: [:votings]) |> Repo.all
-    thread = Post |> from(preload: [:votings]) |> Repo.get!(thread_id)
+  def index(conn, %{"thread_id" => thread_id}) do
+    thread = Post |> PostsHelper.prepare_posts_for_listing |> Repo.get!(thread_id)
+
+    posts = thread.children
 
     render conn, "index.html", 
       posts: posts, 
@@ -15,21 +16,20 @@ defmodule OpenjodelWeb.PostsController do
       voting_form: PostsHelper.init_voting_form
   end
 
-  def new(conn, %{"thread_id" => thread_id} = _params) do
+  def new(conn, %{"thread_id" => thread_id}) do
     changeset = Post.changeset(%Post{}, %{})
-    thread = Repo.get!(Post, thread_id)
+    thread = fetch_post(thread_id)
 
     render conn, "new.html", changeset: changeset, thread_id: thread_id, thread: thread
   end
 
   def create(conn, %{"post" => post_params, "thread_id" => thread_id}) do
-    {thread_id, ""} = Integer.parse(thread_id)
-    thread = Repo.get!(Post, thread_id)
+    thread = fetch_post(thread_id)
 
-    %Post{inserted_at: Calendar.DateTime.now_utc, parent_id: thread_id}
+    %Post{parent_id: thread.id}
+    |> Post.post_to_insert_now
     |> Post.changeset(post_params)
     |> Repo.insert()
-    |> IO.inspect()
     |> case do
       {:ok, post} ->
         conn
@@ -41,8 +41,8 @@ defmodule OpenjodelWeb.PostsController do
     end
   end
 
-  def delete(conn, %{"id" => id, "thread_id" => thread_id} = _params) do
-    Repo.get!(Post, id)
+  def delete(conn, %{"id" => id, "thread_id" => thread_id}) do
+    fetch_post(id)
     |> Repo.delete()
     |> case do
       {:ok, _room} ->
@@ -50,6 +50,15 @@ defmodule OpenjodelWeb.PostsController do
         |> put_flash(:info, "Post deleted!")
         |> redirect(to: thread_posts_path(conn, :index, thread_id))
     end
+  end
+
+  defp fetch_post(id) when is_binary(id) do
+    {id, ""} = Integer.parse(id)
+    fetch_post(id)
+  end
+
+  defp fetch_post(id) do
+    Repo.get!(Post, id)
   end
 
 end

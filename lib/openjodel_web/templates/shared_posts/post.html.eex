@@ -1,0 +1,23 @@
+  <h3>
+    <small>
+      <%= link "[x]", to: @delete_post_path, data: [confirm: "Really?"], method: :delete %>
+    </small>
+    <%= @post.inserted_at |> Calendar.Strftime.strftime!("%d.%m.%Y %H:%M") %>
+    [
+    <%= @post.votings |> Enum.map(fn vote -> vote.score end) |> IO.inspect |> Enum.sum %>
+    ]
+
+  </h3> 
+  <p>
+    <%= form_for @voting_form.upvote_changeset, @post_voting_path, fn f-> %>
+      <%= hidden_input(f, :score) %>
+      <%= submit "upvote", class: "btn btn-primary" %>
+    <% end %>
+
+    <%= form_for @voting_form.downvote_changeset, @post_voting_path, fn f-> %>
+      <%= hidden_input(f, :score) %>
+      <%= submit "downvote", class: "btn btn-primary" %>
+    <% end %>
+
+  </p>
+  <p><%= @post.message %></p>

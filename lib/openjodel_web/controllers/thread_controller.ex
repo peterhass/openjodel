@@ -5,7 +5,7 @@ defmodule OpenjodelWeb.ThreadController do
   import Ecto.Query
 
   def index(conn, _params) do
-    threads = Post |> Post.parents |> from(preload: [:children, :votings]) |> Repo.all
+    threads = Post |> Post.parents |> PostsHelper.prepare_posts_for_listing |> Repo.all
 
     render conn, "index.html", 
       threads: threads, 
@@ -19,10 +19,10 @@ defmodule OpenjodelWeb.ThreadController do
   end
 
   def create(conn, %{"post" => post_params}) do
-    %Post{inserted_at: Calendar.DateTime.now_utc}
-    |> Post.changeset(Map.merge(post_params, %{"parent_id" => nil}))
+    %Post{}
+    |> Post.post_to_insert_now
+    |> Post.changeset(post_params)
     |> Repo.insert()
-    |> IO.inspect()
     |> case do
       {:ok, post} ->
         conn
@@ -34,7 +34,7 @@ defmodule OpenjodelWeb.ThreadController do
     end
   end
 
-  def delete(conn, %{"id" => id} = _params) do
+  def delete(conn, %{"id" => id}) do
     Repo.get!(Post, id)
     |> Repo.delete()
     |> case do
@@ -45,6 +45,6 @@ defmodule OpenjodelWeb.ThreadController do
     end
   end
 
-end
+ end
 
 

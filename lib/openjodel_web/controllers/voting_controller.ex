@@ -17,7 +17,7 @@ defmodule OpenjodelWeb.VotingController do
     end
   end
 
-  defp parent_resource_path(conn, %{"thread_id" => thread_id, "post_id" => _post_id}) do
+  defp parent_resource_path(conn, %{"thread_id" => thread_id, "posts_id" => _post_id}) do
     thread_posts_path(conn, :index, thread_id)
   end
 
@@ -25,7 +25,7 @@ defmodule OpenjodelWeb.VotingController do
     thread_path(conn, :index)
   end
 
-  defp post_id(%{"thread_id" => _thread_id, "post_id" => post_id}) do
+  defp post_id(%{"thread_id" => _thread_id, "posts_id" => post_id}) do
     post_id(post_id)
   end
 

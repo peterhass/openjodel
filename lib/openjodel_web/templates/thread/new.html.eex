@@ -1,13 +1,5 @@
 <h2>Add new thread</h2>
 
 <%= form_for @changeset, thread_path(@conn, :create), fn f -> %>
-  <div class="form-group">
-    <%= label f, :message, class: "control-label" %>
-    <%= text_input f, :message, class: "form-control" %>
-    <%= error_tag f, :message %>
-  </div>
-
-  <div class="form-group">
-    <%= submit "Submit", class: "btn btn-primary" %>
-  </div>
+  <%= render OpenjodelWeb.SharedPostsView, "post_form.html", f: f %>
 <% end %>
