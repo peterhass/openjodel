@@ -1,17 +1,20 @@
 import React from 'react'
-import ThreadList from '../containers/ThreadList'
-import SingleThread from '../containers/SingleThread'
+import ThreadContainer from '../containers/ThreadContainer'
+import ThreadListContainer from '../containers/ThreadListContainer'
 import { Link, Route, NavLink } from 'react-router-dom'
 
 const App = () => (
-  <div>
-    <nav>
-      <NavLink to="/threads">Threads</NavLink>
-    </nav>
-    <div>
-
-      <Route exact path="/threads" component={ThreadList} />
-      <Route path="/threads/:threadId" component={SingleThread} />
+  <div className="container-fluid">
+    <div className="row">
+      <div className="col-12">
+        <nav>
+          <NavLink to="/threads">Threads</NavLink>
+        </nav>
+      </div>
+      <div className="col-12">
+        <Route exact path="/threads" component={ThreadListContainer} />
+        <Route path="/threads/:threadId" component={ThreadContainer} />
+      </div>
     </div>
   </div>
 )

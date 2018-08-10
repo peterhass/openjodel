@@ -1,1 +1,60 @@
 /* This file is for your main application css. */
+
+#root {
+  color: #fff;
+  font-size: 14px;
+}
+
+.screen-heading {
+  height: 10vh;
+
+  border-bottom: 1px solid silver;
+
+  text-align: center;
+
+  padding-bottom: 1em;
+
+  background-color: white;
+}
+
+.list-group-item.green {
+  background-color: #9ec41c;
+
+}
+
+.openjodel-list .list-group-item {
+  border-bottom: 4px solid white;
+  border-top: unset;
+}
+
+.openjodel-list.single-thread .list-group-item {
+  border-bottom: none;
+}
+.openjodel-list.single-thread .list-group-item.thread-item {
+
+  border-bottom: 4px solid white;
+}
+
+.posting .posting-heading {
+  opacity: 0.6;
+
+  margin-bottom: 0.5em;
+}
+
+.posting .posting-footer {
+  margin-top: 0.5em;
+}
+
+.posting .voting {
+  text-align: center;
+}
+
+.posting .voting > * {
+  display: block;
+}
+
+.posting .voting .counter {
+  padding-top: 0.4em;
+  padding-bottom: 0.4em;
+  opacity: 0.6;  
+}
