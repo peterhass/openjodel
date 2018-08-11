@@ -1,5 +1,6 @@
 defmodule OpenjodelWeb.UserSocket do
   use Phoenix.Socket
+  use Absinthe.Phoenix.Socket, schema: OpenjodelWeb.Schema
 
   ## Channels
   # channel "room:*", OpenjodelWeb.RoomChannel
@@ -20,8 +21,18 @@ defmodule OpenjodelWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(_params, socket) do
+    # current_user = current_user(_params)
+    socket = Absinthe.Phoenix.Socket.put_opts(socket, context: %{
+      #current_user: current_user
+    })
+
     {:ok, socket}
   end
+
+  #defp current_user(%{"user_id" => id}) do
+  #  MyApp.Repo.get(User, id)
+  #end
+
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
   #

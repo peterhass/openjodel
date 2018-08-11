@@ -41,7 +41,11 @@ defmodule Openjodel.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
-      {:calendar, "~> 0.17.2"}
+      {:calendar, "~> 0.17.2"},
+      {:absinthe, "~> 1.4.0"},
+      {:absinthe_phoenix, "~> 1.4.0"},
+      {:absinthe_plug, "~> 1.4"},
+      {:poison, "~> 3.1.0"}
     ]
   end
 

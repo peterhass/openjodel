@@ -1,5 +1,6 @@
 defmodule OpenjodelWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :openjodel
+  use Absinthe.Phoenix.Endpoint
 
   socket "/socket", OpenjodelWeb.UserSocket
 
@@ -38,6 +39,8 @@ defmodule OpenjodelWeb.Endpoint do
     signing_salt: "W+SY6qpi"
 
   plug OpenjodelWeb.Router
+
+
 
   @doc """
   Callback invoked for dynamically configuring the endpoint.

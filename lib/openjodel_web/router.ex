@@ -16,6 +16,7 @@ defmodule OpenjodelWeb.Router do
   scope "/", OpenjodelWeb do
     pipe_through :browser # Use the default browser stack
 
+    get "/*path", PageController, :index
     get "/", PageController, :index
     resources "/threads", ThreadController do
       resources "/posts", PostsController do
@@ -24,6 +25,13 @@ defmodule OpenjodelWeb.Router do
 
       resources "/votings", VotingController
     end
+  end
+
+  scope "/api" do
+    pipe_through :api
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: OpenjodelWeb.Schema
+    forward "/", Absinthe.Plug, schema: OpenjodelWeb.Schema
   end
 
   # Other scopes may use custom stacks.
