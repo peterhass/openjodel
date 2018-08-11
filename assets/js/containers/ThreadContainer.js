@@ -1,23 +1,39 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import Thread from '../components/Thread.js'
-import { votePost } from '../actions/posts'
+import gql from 'graphql-tag'
+import { Query } from 'react-apollo'
 
-const mapStateToProps = (state, ownProps) => {
-  const thread = state.posts.byId[ownProps.match.params.threadId]
-  return {
-    thread,
-    posts: thread.childrenIds.map(childId => state.posts.byId[childId])
+const FIND_THREAD = gql`
+ query Thread($id: String!) {
+   thread(id: $id) {
+    id
+    message
+    insertedAt
+    children {
+      id
+      message
+      insertedAt
+    }
   }
 }
 
+`
 
-const mapDispatchToProps = dispatch => ({
-  onPostVoting: (id, score) => dispatch(votePost({ id, score }))
-})
+const ThreadContainer = ({match}) => (
+  <Query query={FIND_THREAD} variables={{id: match.params.threadId}}>
+    {({ loading, error, data }) => {
+      if (loading) return "Loading ..."
+      if (error) return `Error! ${error.message}`
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+      return (
+        <Thread
+          thread={data.thread}
+          posts={data.thread.children}
+          onPostVoting={() => { console.log('on post voting') }}
+        />
+      )
+    }}
+  </Query>
+)
 
-)(Thread)
+export default ThreadContainer

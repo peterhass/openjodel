@@ -1,18 +1,18 @@
 import React from 'react'
 import { render } from 'react-dom'
-import { Provider } from 'react-redux'
-import { createStore } from 'redux'
-import rootReducer from './reducers'
 import App from './components/App'
 import { BrowserRouter } from 'react-router-dom'
+import ApolloClient from 'apollo-boost'
+import { ApolloProvider } from 'react-apollo'
 
-let store = createStore(rootReducer)
+
+const client = new ApolloClient({ uri: "/api/graphql" })
 
 render(
-  <Provider store={store}>
+  <ApolloProvider client={client}>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </Provider>,
+  </ApolloProvider>,
   document.getElementById('root')
 )
