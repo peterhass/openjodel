@@ -1,8 +1,11 @@
 /* This file is for your main application css. */
 
 #root {
-  color: #fff;
   font-size: 14px;
+}
+
+.content-box {
+
 }
 
 .screen-heading {
@@ -20,6 +23,11 @@
 .list-group-item.green {
   background-color: #9ec41c;
 
+}
+
+.openjodel-list {
+
+  color: #fff;
 }
 
 .openjodel-list .list-group-item {
