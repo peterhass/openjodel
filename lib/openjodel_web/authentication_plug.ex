@@ -4,18 +4,20 @@ defmodule OpenjodelWeb.AuthenticationPlug do
   import Plug.Conn
 
   alias Openjodel.{Repo, User}
+  import Openjodel.Repo
+  import Ecto.Query
 
   def init(opts), do: opts
 
   def call(conn, _) do
-    context = build_user_context(conn)
-    Absinthe.Plug.put_options(conn, user_context: context)
+    context = build_context(conn)
+    Absinthe.Plug.put_options(conn, context: context)
   end
 
   @doc """
   Return the current user context based on the authorization header
   """
-  def build_user_context(conn) do
+  def build_context(conn) do
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
          {:ok, current_user} <- authorize(token) do
       %{current_user: current_user}
@@ -25,12 +27,14 @@ defmodule OpenjodelWeb.AuthenticationPlug do
   end
 
 
-  def authorize("123" = token) do
-    %User{id: 999}
-  end
-
-  def authorize(token) do
-    {:error, "invalid auth token"}
+  defp authorize(token) do
+    User 
+    |> where([p], p.token == ^token)
+    |> Repo.one()
+    |> case do
+      nil -> {:error, "invalid auth token"}
+      user -> {:ok, user}
+    end
   end
 
 end

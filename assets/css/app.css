@@ -1,5 +1,11 @@
 /* This file is for your main application css. */
 
+.fas.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 #root {
   font-size: 14px;
 }
@@ -59,6 +65,16 @@
 
 .posting .voting > * {
   display: block;
+}
+
+.posting .voting a {
+  color: white;
+}
+.posting .voting a.upvote.active {
+  color: orange;
+}
+.posting .voting a.downvote.active {
+  color: black;
 }
 
 .posting .voting .counter {

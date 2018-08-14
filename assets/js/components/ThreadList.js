@@ -15,6 +15,7 @@ const ThreadList = ({ threads, onPostVoting, CommentLink }) => (
               {...thread}
               onUpvote={() => onPostVoting(thread.id, 1)}
               onDownvote={() => onPostVoting(thread.id, -1)}
+              onResetVote={() => onPostVoting(thread.id, 0)}
               CommentLink={CommentLink}
             />
           </div>

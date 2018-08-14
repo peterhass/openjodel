@@ -15,10 +15,12 @@ const GET_THREADS = gql`
     message
     insertedAt
     votingScore
+    currentUserVotingScore
     children {
       id
       message
       votingScore
+      currentUserVotingScore
       insertedAt
     }
   }
@@ -33,10 +35,12 @@ const VOTE_POST_MUTATION = gql`
       message
       votingScore
       insertedAt
+      currentUserVotingScore
       children {
         id
         message
         votingScore
+        currentUserVotingScore
         insertedAt
       }
     }

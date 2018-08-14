@@ -3,9 +3,10 @@ import ThreadContainer from '../containers/ThreadContainer'
 import ThreadListContainer from '../containers/ThreadListContainer'
 import { Link, Route, NavLink, Redirect } from 'react-router-dom'
 import Login from '../components/Login'
+import { getAuthToken } from '../apollo_client'
 
 const auth = {
-  get isAuthenticated() { return !!localStorage.getItem('token') } 
+  get isAuthenticated() { return !!getAuthToken() } 
 }
 
 const PrivateRoute = ({ component: Component, ...rest }) => (

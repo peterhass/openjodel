@@ -9,6 +9,7 @@ defmodule Openjodel.Voting do
     # TODO: add user who voted when available
 
     belongs_to :post, Post
+    belongs_to :user, User
   end
 
   def positive_voting(%Voting{} = voting \\ %Voting{}) do
@@ -22,7 +23,7 @@ defmodule Openjodel.Voting do
   def changeset(%Voting{} = voting, attrs) do
     voting
     |> cast(attrs, [:score])
-    |> validate_inclusion(:score, [-1, 1])
+    |> validate_inclusion(:score, [-1, 1, 0])
     |> validate_required(:score)
   end
 end

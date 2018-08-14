@@ -14,6 +14,7 @@ const Thread = ({ thread, posts, onPostVoting }) => (
             {...thread} 
             onUpvote={() => onPostVoting(thread.id, 1)}
             onDownvote={() => onPostVoting(thread.id, -1)}
+            onResetVote={() => onPostVoting(thread.id, 0)}
 
           />
         </div>
@@ -25,6 +26,7 @@ const Thread = ({ thread, posts, onPostVoting }) => (
               key={post.id}
               onUpvote={() => onPostVoting(post.id, 1)}
               onDownvote={() => onPostVoting(post.id, -1)}
+              onResetVote={() => onPostVoting(post.id, 0)}
               {...post}
             />
           </div>

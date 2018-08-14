@@ -5,6 +5,9 @@ import { onError } from 'apollo-link-error'
 import { ApolloLink } from 'apollo-link'
 import { setContext  } from 'apollo-link-context'
 
+const setAuthToken = (token) => localStorage.setItem('auth-token', token)
+const getAuthToken = () => localStorage.getItem('auth-token')
+
 const cache = new InMemoryCache()
 const link = ApolloLink.from([
   onError(({ graphQLErrors, networkError  }) => {
@@ -19,8 +22,7 @@ const link = ApolloLink.from([
 
   setContext((_, { headers }) => {
     // get token from users machine
-    const token = localStorage.getItem('token')
-
+    const token = getAuthToken()
     return {
       headers: {
         ...headers,
@@ -42,4 +44,5 @@ const client = new ApolloClient({
   cache
 })
 
+export { getAuthToken, setAuthToken }
 export default client

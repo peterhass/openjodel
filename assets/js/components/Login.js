@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
+import { getAuthToken, setAuthToken } from '../apollo_client'
 
 const SIGNUP_MUTATION = gql`
   mutation SignupMutation {
@@ -24,7 +25,7 @@ class Login extends Component {
 
   render() {
     const { restoreKey } = this.state
-    const authToken = localStorage.getItem('token')
+    const authToken = getAuthToken()
 
     return (
       <div>
@@ -69,7 +70,7 @@ class Login extends Component {
   _confirm(data) {
     let token = data.login ? data.login.token : data.signup.token
 
-    localStorage.setItem('token', token)
+    setAuthToken(token)
     this.props.history.push('/')
   }
   

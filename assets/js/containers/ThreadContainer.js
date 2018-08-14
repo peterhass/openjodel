@@ -9,11 +9,13 @@ const FIND_THREAD = gql`
     id
     message
     votingScore
+    currentUserVotingScore
     insertedAt
     children {
       id
       message
       votingScore
+      currentUserVotingScore
       insertedAt
     }
   }
@@ -28,10 +30,12 @@ const VOTE_POST_MUTATION = gql`
       message
       votingScore
       insertedAt
+      currentUserVotingScore
       children {
         id
         message
         votingScore
+        currentUserVotingScore
         insertedAt
       }
     }
