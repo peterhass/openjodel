@@ -25,5 +25,4 @@ defmodule Openjodel.Voting do
     |> validate_inclusion(:score, [-1, 1])
     |> validate_required(:score)
   end
-
 end

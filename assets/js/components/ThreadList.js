@@ -13,8 +13,8 @@ const ThreadList = ({ threads, onPostVoting, CommentLink }) => (
             <Post
               key={thread.id}
               {...thread}
-              onUpvote={() => onPostVoting(post.id, 1)}
-              onDownvote={() => onPostVoting(post.id, -1)}
+              onUpvote={() => onPostVoting(thread.id, 1)}
+              onDownvote={() => onPostVoting(thread.id, -1)}
               CommentLink={CommentLink}
             />
           </div>

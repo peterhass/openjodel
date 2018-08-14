@@ -5,7 +5,7 @@ import Moment from 'react-moment'
 
 // TODO: extract linking of threads
 
-const Post = ({ message, insertedAt, score, id, children, onUpvote, onDownvote, CommentLink }) => (
+const Post = ({ message, insertedAt, votingScore, id, children, onUpvote, onDownvote, CommentLink }) => (
   <div className="posting col-12">
     <div className="row">
       <div className="posting-heading col-12">
@@ -23,7 +23,7 @@ const Post = ({ message, insertedAt, score, id, children, onUpvote, onDownvote, 
           <div className="col-2">
             <div className="pull-right voting">
               <i className="fas fa-chevron-circle-up fa-lg" onClick={onUpvote}></i>
-              <span className="counter">{ score }</span>
+              <span className="counter">{ votingScore }</span>
               <i className="fas fa-chevron-circle-down fa-lg" onClick={onDownvote}></i>
             </div>
           </div>

@@ -10,6 +10,11 @@ defmodule OpenjodelWeb.Schema do
     field :token, :string
   end
 
+  object :vote_post_parameter do
+    field :id, :integer
+    field :score, :integer
+  end
+
   mutation do
     field :login, :validate_token_parameter do
       arg :token, non_null(:string)
@@ -19,6 +24,13 @@ defmodule OpenjodelWeb.Schema do
     
     field :signup, :validate_token_parameter do
       resolve &Resolvers.Content.signup/3
+    end
+
+    field :vote_post, :post do
+      arg :id, non_null(:id)
+      arg :score, non_null(:integer)
+
+      resolve &Resolvers.Content.vote_post/3
     end
   end
 
