@@ -1,5 +1,0 @@
-<h2>Add new post</h2>
-
-<%= form_for @changeset, thread_posts_path(@conn, :create, @thread_id), fn f -> %>
-  <%= render OpenjodelWeb.SharedPostsView, "post_form.html", f: f %>
-<% end %>

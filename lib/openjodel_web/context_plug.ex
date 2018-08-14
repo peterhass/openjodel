@@ -1,10 +1,9 @@
-defmodule OpenjodelWeb.AuthenticationPlug do
+defmodule OpenjodelWeb.ContextPlug do
   @behaviour Plug
 
   import Plug.Conn
 
   alias Openjodel.{Repo, User}
-  import Openjodel.Repo
   import Ecto.Query
 
   def init(opts), do: opts

@@ -11,21 +11,13 @@ defmodule OpenjodelWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug OpenjodelWeb.AuthenticationPlug
+    plug OpenjodelWeb.ContextPlug
   end
 
   scope "/", OpenjodelWeb do
     pipe_through :browser # Use the default browser stack
 
     get "/*path", PageController, :index
-    get "/", PageController, :index
-    resources "/threads", ThreadController do
-      resources "/posts", PostsController do
-        resources "/votings", VotingController
-      end
-
-      resources "/votings", VotingController
-    end
   end
 
   scope "/api" do

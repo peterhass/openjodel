@@ -8,10 +8,9 @@ const ThreadList = ({ threads, onPostVoting, CommentLink }) => (
     </div>
     <div className="col-12 list-group list-unstyled">
       {threads.map(thread =>
-        <div className="list-group-item green">
+        <div className="list-group-item green" key={thread.id}>
           <div className="row">  
             <Post
-              key={thread.id}
               {...thread}
               onUpvote={() => onPostVoting(thread.id, 1)}
               onDownvote={() => onPostVoting(thread.id, -1)}
