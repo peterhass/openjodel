@@ -5,7 +5,22 @@ defmodule OpenjodelWeb.Schema do
   import_types OpenjodelWeb.Schema.ContentTypes
 
   alias OpenjodelWeb.Resolvers
-  
+
+  object :validate_token_parameter do
+    field :token, :string
+  end
+
+  mutation do
+    field :login, :validate_token_parameter do
+      arg :token, non_null(:string)
+
+      resolve &Resolvers.Content.login/3
+    end
+    
+    field :signup, :validate_token_parameter do
+      resolve &Resolvers.Content.signup/3
+    end
+  end
 
   query do
     @desc "Get all posts"

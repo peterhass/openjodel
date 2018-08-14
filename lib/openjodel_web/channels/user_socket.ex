@@ -22,7 +22,7 @@ defmodule OpenjodelWeb.UserSocket do
   # performing token verification on connect.
   def connect(_params, socket) do
     # current_user = current_user(_params)
-    socket = Absinthe.Phoenix.Socket.put_opts(socket, context: %{
+    socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{
       #current_user: current_user
     })
 

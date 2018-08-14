@@ -11,8 +11,8 @@ const SIGNUP_MUTATION = gql`
 `
 
 const RESTORE_MUTATION = gql`
-  mutation ValidateToken($token: String!) {
-    validateToken(token: $token) {
+  mutation Login($token: String!) {
+    login(token: $token) {
       token
     }
   }
@@ -67,7 +67,7 @@ class Login extends Component {
   }
 
   _confirm(data) {
-    let token = data.validateToken ? data.validateToken.token : data.signup.token
+    let token = data.login ? data.login.token : data.signup.token
 
     localStorage.setItem('token', token)
     this.props.history.push('/')

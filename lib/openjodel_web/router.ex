@@ -11,6 +11,7 @@ defmodule OpenjodelWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug OpenjodelWeb.AuthenticationPlug
   end
 
   scope "/", OpenjodelWeb do

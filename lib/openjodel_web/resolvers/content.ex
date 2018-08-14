@@ -1,6 +1,17 @@
 defmodule OpenjodelWeb.Resolvers.Content do
-  alias Openjodel.{Repo, Post, Voting}
+  alias Openjodel.{Repo, Post, Voting, User}
   import Ecto.Query
+
+  def signup(_, _, _) do
+    # create new user
+    user = User.with_token |> User.changeset(%{}) |> Repo.insert!()
+
+    {:ok, user}
+  end
+
+  def login(_, %{token: token}, _) do
+    {:ok, User |> where([u], u.token == ^token) |> Repo.one!}
+  end
 
   def list_threads(_, _, _) do
     {:ok, Post |> Post.parents |> Repo.all}
