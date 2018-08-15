@@ -48,9 +48,30 @@ const VOTE_POST_MUTATION = gql`
   }
 `
 
+const THREADS_SUBSCRIPTION = gql`
+subscription onThreadsChanged {
+  threadsChanged {
+    id
+    message
+    votingScore
+    currentUserVotingScore
+    insertedAt
+    children {
+      id
+      message
+      votingScore
+      currentUserVotingScore
+      insertedAt
+    }
+
+  }
+}
+`
+
+
 const ThreadListContainer = ({}) => (
   <Query query={GET_THREADS}>
-    {({ loading, error, data }) => {
+    {({ loading, error, data, subscribeToMore }) => {
       if (loading) return "Loading ..."
       if (error) return `Error! ${error.message}`
 
@@ -62,6 +83,16 @@ const ThreadListContainer = ({}) => (
               threads={data.threads} 
               CommentLink={CommentLink}
               onPostVoting={(postId, score) => mutation({variables: {id: postId, score: score}})}
+              subscribeToThreadsChanges={() => {
+                subscribeToMore({
+                  document: THREADS_SUBSCRIPTION,
+                  updateQuery: (prev, { subscriptionData }) => {
+                    if (!subscriptionData.data) return prev
+
+                    return Object.assign({}, prev, { threads: subscriptionData.data.threadsChanged })
+                  }
+                })
+              }}
             />
 
           )}

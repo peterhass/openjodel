@@ -1,6 +1,7 @@
 defmodule OpenjodelWeb.UserSocket do
   use Phoenix.Socket
   use Absinthe.Phoenix.Socket, schema: OpenjodelWeb.Schema
+  alias OpenjodelWeb.TokenAuthentication
 
   ## Channels
   # channel "room:*", OpenjodelWeb.RoomChannel
@@ -20,14 +21,20 @@ defmodule OpenjodelWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
-    # current_user = current_user(_params)
-    socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{
-      #current_user: current_user
-    })
+  def connect(%{"token" => token}, socket) do
 
-    {:ok, socket}
+    # current_user = current_user(_params)
+    case TokenAuthentication.authorize(token) do
+      {:ok, user} -> 
+        socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{
+          current_user: user
+        })
+        {:ok, socket}
+      {:error, _reason} -> :error
+    end
   end
+
+  def connect(_params, _socket), do: :error
 
   #defp current_user(%{"user_id" => id}) do
   #  MyApp.Repo.get(User, id)
@@ -44,5 +51,9 @@ defmodule OpenjodelWeb.UserSocket do
   #     OpenjodelWeb.Endpoint.broadcast("user_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
-  def id(_socket), do: nil
+  def id(socket) do
+    #require IEx; IEx.pry
+    user_id = socket.assigns.absinthe.opts[:context].current_user.id
+    "user_socket:#{user_id}"
+  end
 end

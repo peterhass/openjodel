@@ -23,7 +23,7 @@ defmodule OpenjodelWeb.Router do
   scope "/api" do
     pipe_through :api
 
-    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: OpenjodelWeb.Schema
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: OpenjodelWeb.Schema, socket: OpenjodelWeb.UserSocket
     forward "/", Absinthe.Plug, schema: OpenjodelWeb.Schema
   end
 

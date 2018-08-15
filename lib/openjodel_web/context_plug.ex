@@ -3,8 +3,8 @@ defmodule OpenjodelWeb.ContextPlug do
 
   import Plug.Conn
 
-  alias Openjodel.{Repo, User}
-  import Ecto.Query
+  alias OpenjodelWeb.TokenAuthentication
+
 
   def init(opts), do: opts
 
@@ -18,21 +18,10 @@ defmodule OpenjodelWeb.ContextPlug do
   """
   def build_context(conn) do
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
-         {:ok, current_user} <- authorize(token) do
+         {:ok, current_user} <- TokenAuthentication.authorize(token) do
       %{current_user: current_user}
     else
       _ -> %{}
-    end
-  end
-
-
-  defp authorize(token) do
-    User 
-    |> where([p], p.token == ^token)
-    |> Repo.one()
-    |> case do
-      nil -> {:error, "invalid auth token"}
-      user -> {:ok, user}
     end
   end
 

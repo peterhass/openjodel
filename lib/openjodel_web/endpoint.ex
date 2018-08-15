@@ -1,7 +1,6 @@
 defmodule OpenjodelWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :openjodel
   use Absinthe.Phoenix.Endpoint
-
   socket "/socket", OpenjodelWeb.UserSocket
 
   # Serve at "/" the static files from "priv/static" directory.

@@ -1,9 +1,14 @@
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { HttpLink } from 'apollo-link-http'
+import { WebSocketLink } from 'apollo-link-ws'
 import { onError } from 'apollo-link-error'
-import { ApolloLink } from 'apollo-link'
+import { ApolloLink, split } from 'apollo-link'
 import { setContext  } from 'apollo-link-context'
+import { getMainDefinition } from 'apollo-utilities'
+import {Socket as PhoenixSocket} from 'phoenix'
+import * as AbsintheSocket from '@absinthe/socket'
+import { createAbsintheSocketLink } from '@absinthe/socket-apollo-link'
 
 const setAuthToken = (token) => localStorage.setItem('auth-token', token)
 const getAuthToken = () => localStorage.getItem('auth-token')
@@ -31,11 +36,22 @@ const link = ApolloLink.from([
     }
   }),
 
-  new HttpLink({
-    uri: "/api/graphql" 
-  }),
+  
 
+  split(
+    ({ query }) => {
+      const { kind, operation } = getMainDefinition(query)
+      return kind === 'OperationDefinition' && operation === 'subscription'
+    },
+    createAbsintheSocketLink(AbsintheSocket.create(
+      new PhoenixSocket(`ws://${location.hostname}:${location.port}/socket`, { params: { token: getAuthToken() } })
+    )),
 
+    new HttpLink({
+      uri: "/api/graphql" 
+    })
+
+  )
 ])
 
 

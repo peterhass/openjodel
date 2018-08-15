@@ -56,14 +56,18 @@ defmodule OpenjodelWeb.Resolvers.Content do
   def list_posts(_parent, _, %{context: %{current_user: current_user}}) do
     {:ok, Post |> init_posts_query |> Repo.all |> PostWithVotingScore.from_posts(current_user)}
   end
-
-  def list_thread_posts(%Post{} = post, args, %{context: %{current_user: current_user}} = resolution) do
-    list_thread_posts(post |> PostWithVotingScore.from_post(current_user), args, resolution)
-  end
-
-  def list_thread_posts(%PostWithVotingScore{} = post, _, %{context: %{current_user: current_user}}) do
+  def list_thread_posts(post, _, %{context: %{current_user: current_user}}) do
     {:ok, Post |> init_posts_query |> where([p], p.parent_id == ^post.id) |> Repo.all |> PostWithVotingScore.from_posts(current_user)}
   end
+
+  
+  def list_thread_posts(post, args, %{context: context}) do
+    IO.inspect("list_thread_posts ...")
+    IO.inspect(context)
+    list_thread_posts(post, args, %{context: context})
+  end
+
+
 
   def vote_post(_parent, %{id: id, score: score}, %{context: %{current_user: current_user}}) do
     post = Post |> Repo.get!(id)
