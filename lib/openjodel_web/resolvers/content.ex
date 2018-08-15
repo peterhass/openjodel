@@ -44,6 +44,10 @@ defmodule OpenjodelWeb.Resolvers.Content do
     {:ok, User |> where([u], u.token == ^token) |> Repo.one!}
   end
 
+  def create_thread(_, %{message: message}, %{context: %{current_user: current_user}}) do
+    {:ok, %Post{inserted_at: Calendar.DateTime.now_utc, message: message} |> Post.changeset(%{message: message}) |> Repo.insert! }
+  end
+
   def list_threads(_, _, %{context: %{current_user: current_user}}) do
     {:ok, Post |> init_posts_query |> Post.parents |> Repo.all |> PostWithVotingScore.from_posts(current_user)}
   end

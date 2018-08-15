@@ -8,6 +8,10 @@ const CommentLink = ({ threadId, children, ...linkProps }) => (
   <Link to={`/threads/${threadId}`} {...linkProps}>{children}</Link>
 )
 
+const NewThreadLink = ({ children, ...linkProps }) => (
+  <Link to="/threads/new" {...linkProps}>{children}</Link>
+)
+
 const GET_THREADS = gql`
  {
   threads {
@@ -82,6 +86,7 @@ const ThreadListContainer = ({}) => (
             <ThreadList 
               threads={data.threads} 
               CommentLink={CommentLink}
+              NewThreadLink={NewThreadLink}
               onPostVoting={(postId, score) => mutation({variables: {id: postId, score: score}})}
               subscribeToThreadsChanges={() => {
                 subscribeToMore({

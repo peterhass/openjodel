@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import Post from './Post'
+import Moment from 'moment'
 
 class ThreadList extends Component {
   componentDidMount() {
@@ -7,7 +8,11 @@ class ThreadList extends Component {
   }
 
   render() {
-    const { threads, onPostVoting, CommentLink } = this.props
+    const { threads, onPostVoting, CommentLink, NewThreadLink } = this.props
+
+    const orderedThreads = [...threads].sort((leftThread, rightThread) => 
+      Moment.utc(rightThread.insertedAt).diff(Moment.utc(leftThread.insertedAt))
+    )
 
     return (
       <div className="thread-list openjodel-list row">
@@ -15,7 +20,7 @@ class ThreadList extends Component {
           <h1>Threads</h1>
         </div>
         <div className="col-12 list-group list-unstyled">
-          {threads.map(thread =>
+          {orderedThreads.map(thread =>
             <div className="list-group-item green" key={thread.id}>
               <div className="row">  
                 <Post
@@ -28,6 +33,11 @@ class ThreadList extends Component {
               </div>
             </div>
           )}
+        </div>
+        <div className="floating-action-button">
+          <NewThreadLink>
+            <i className="fas fa-plus-square fa-5x"></i>
+          </NewThreadLink>
         </div>
       </div>
     )

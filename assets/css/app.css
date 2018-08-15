@@ -82,3 +82,19 @@
   padding-bottom: 0.4em;
   opacity: 0.6;  
 }
+
+.floating-action-button {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  z-index: 100;
+}
+
+.floating-action-button a {
+  color: black;
+}
+
+.new-thread textarea {
+  height: 50vh !important;
+}

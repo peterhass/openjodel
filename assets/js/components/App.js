@@ -1,7 +1,8 @@
 import React from 'react'
 import ThreadContainer from '../containers/ThreadContainer'
 import ThreadListContainer from '../containers/ThreadListContainer'
-import { Link, Route, NavLink, Redirect } from 'react-router-dom'
+import NewThreadContainer from '../containers/NewThreadContainer'
+import { Link, Route, NavLink, Redirect, Switch } from 'react-router-dom'
 import Login from '../components/Login'
 import { getAuthToken } from '../apollo_client'
 
@@ -31,9 +32,12 @@ const App = () => (
     </nav>
     <div className="row content-box">
       <div className="col-12">
-        <Route path="/login" component={Login} />
-        <PrivateRoute exact path="/threads" component={ThreadListContainer} />
-        <PrivateRoute path="/threads/:threadId" component={ThreadContainer} />
+        <Switch>
+          <Route path="/login" component={Login} />
+          <PrivateRoute exact path="/threads" component={ThreadListContainer} />
+          <PrivateRoute exact path="/threads/new" component={NewThreadContainer} />
+          <PrivateRoute path="/threads/:threadId" component={ThreadContainer} />
+        </Switch>
       </div>
     </div>
   </div>

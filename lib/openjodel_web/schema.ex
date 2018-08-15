@@ -44,6 +44,8 @@ defmodule OpenjodelWeb.Schema do
         end
       end
 
+      trigger :create_thread, topic: fn _ -> :is_thread end 
+
       resolve &Resolvers.Content.list_threads/3
     end
   end
@@ -64,6 +66,12 @@ defmodule OpenjodelWeb.Schema do
       arg :score, non_null(:integer)
 
       resolve &Resolvers.Content.vote_post/3
+    end
+
+    field :create_thread, :post do
+      arg :message, non_null(:string)
+
+      resolve &Resolvers.Content.create_thread/3
     end
   end
 
