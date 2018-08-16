@@ -73,6 +73,13 @@ defmodule OpenjodelWeb.Schema do
 
       resolve &Resolvers.Content.create_thread/3
     end
+
+    field :create_post, :post do
+      arg :message, non_null(:string)
+      arg :parent_id, non_null(:id)
+
+      resolve &Resolvers.Content.create_post/3
+    end
   end
 
   query do

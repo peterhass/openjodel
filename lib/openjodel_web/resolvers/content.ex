@@ -45,7 +45,11 @@ defmodule OpenjodelWeb.Resolvers.Content do
   end
 
   def create_thread(_, %{message: message}, %{context: %{current_user: current_user}}) do
-    {:ok, %Post{inserted_at: Calendar.DateTime.now_utc, message: message} |> Post.changeset(%{message: message}) |> Repo.insert! }
+    {:ok, %Post{inserted_at: Calendar.DateTime.now_utc} |> Post.changeset(%{message: message}) |> Repo.insert! }
+  end
+
+  def create_post(_, %{message: message, parent_id: parent_id}, %{context: %{current_user: current_user}}) do
+    {:ok, %Post{inserted_at: Calendar.DateTime.now_utc} |> Post.changeset(%{message: message, parent_id: parent_id}) |> Repo.insert! }
   end
 
   def list_threads(_, _, %{context: %{current_user: current_user}}) do

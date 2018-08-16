@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Post from './Post'
+import NewPost from './NewPost'
 
 class Thread extends Component {
   componentDidMount() {
@@ -7,7 +8,7 @@ class Thread extends Component {
   }
 
   render() {
-    const { thread, posts, onPostVoting } = this.props
+    const { thread, posts, onPostVoting, onCreatePost } = this.props
 
     return (
       <div className="single-thread openjodel-list row">
@@ -28,10 +29,9 @@ class Thread extends Component {
             </div>
           </div>
           {posts.map(post =>
-            <div className="list-group-item green">
+            <div className="list-group-item green" key={post.id}>
               <div className="row">  
                 <Post
-                  key={post.id}
                   onUpvote={() => onPostVoting(post.id, 1)}
                   onDownvote={() => onPostVoting(post.id, -1)}
                   onResetVote={() => onPostVoting(post.id, 0)}
@@ -41,6 +41,9 @@ class Thread extends Component {
             </div>
           )}
         </div>
+        <NewPost 
+          onCreatePost={onCreatePost}
+        />
       </div>
 
     )

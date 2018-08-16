@@ -84,13 +84,13 @@ const ThreadListContainer = ({}) => (
 
       return (
        <Mutation mutation={VOTE_POST_MUTATION}>
-          {mutation => (
+          {votePostMutation => (
 
             <ThreadList 
               threads={data.threads} 
               CommentLink={CommentLink}
               NewThreadLink={NewThreadLink}
-              onPostVoting={(postId, score) => mutation({variables: {id: postId, score: score}})}
+              onPostVoting={(postId, score) => votePostMutation({variables: {id: postId, score: score}})}
               subscribeToThreadsChanges={() => {
                 subscribeToMore({
                   document: THREADS_SUBSCRIPTION,

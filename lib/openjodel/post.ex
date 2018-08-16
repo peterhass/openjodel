@@ -14,7 +14,8 @@ defmodule Openjodel.Post do
 
   def changeset(%Post{} = post, attrs) do
     post 
-    |> cast(attrs, [:message, :inserted_at])
+    |> cast(attrs, [:message, :inserted_at, :parent_id])
+    |> foreign_key_constraint(:parent_id)
     |> validate_required([:message, :inserted_at])
   end
 
