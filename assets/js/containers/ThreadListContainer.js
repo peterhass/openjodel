@@ -13,13 +13,14 @@ const NewThreadLink = ({ children, ...linkProps }) => (
 )
 
 const GET_THREADS = gql`
- {
+ query GetThreads {
   threads {
     id
     message
     insertedAt
     votingScore
     currentUserVotingScore
+    parentId
     children {
       id
       message
@@ -60,9 +61,11 @@ subscription onThreadsChanged {
     votingScore
     currentUserVotingScore
     insertedAt
+    parentId
     children {
       id
       message
+      parentId
       votingScore
       currentUserVotingScore
       insertedAt

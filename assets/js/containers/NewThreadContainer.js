@@ -21,6 +21,7 @@ class NewThreadContainer extends Component {
     return (
       <Mutation 
         mutation={CREATE_THREAD_MUTATION}
+        refetchQueries={['GetThreads']}
         onCompleted={({ createThread: thread }) => {
           console.log(thread)
           this.props.history.push(`/threads/${thread.id}`)
