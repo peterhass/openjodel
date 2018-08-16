@@ -27,6 +27,10 @@ defmodule OpenjodelWeb.Schema do
         post.parent_id || post.id
       end
 
+      trigger :create_post, topic: fn post ->
+        post.parent_id
+      end
+
       resolve fn parent, args, res ->
         Resolvers.Content.find_thread(parent, %{id: args.post_id}, res)
       end
