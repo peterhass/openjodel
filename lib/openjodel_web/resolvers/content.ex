@@ -1,5 +1,6 @@
 defmodule OpenjodelWeb.Resolvers.Content do
   alias Openjodel.{Repo, Post, Voting, User}
+  alias Openjodel.Processes
   alias __MODULE__.PostWithVotingScore
   import Ecto.Query
 
@@ -44,12 +45,20 @@ defmodule OpenjodelWeb.Resolvers.Content do
     {:ok, User |> where([u], u.token == ^token) |> Repo.one!}
   end
 
-  def create_thread(_, %{message: message}, %{context: %{current_user: current_user}}) do
-    {:ok, %Post{inserted_at: Calendar.DateTime.now_utc} |> Post.changeset(%{message: message}) |> Repo.insert! }
+  def create_thread(_, post_attrs, %{context: %{current_user: current_user}}) do
+    Processes.Thread.start_thread(current_user, post_attrs)
+    |> case do
+      {:ok, thread} -> {:ok, thread}
+      {:error, _} -> throw("Unable to create thread (TODO: add proper error handling)")
+    end
   end
 
-  def create_post(_, %{message: message, parent_id: parent_id}, %{context: %{current_user: current_user}}) do
-    {:ok, %Post{inserted_at: Calendar.DateTime.now_utc} |> Post.changeset(%{message: message, parent_id: parent_id}) |> Repo.insert! }
+  def create_post(_, post_attrs, %{context: %{current_user: current_user}}) do
+    Processes.Thread.add_post(current_user, post_attrs)
+    |> case do
+      {:ok, _} = result -> result
+      {:error, _} -> throw("Unable to create post (TODO: add proper error handling)")
+    end
   end
 
   def list_threads(_, _, %{context: %{current_user: current_user}}) do
