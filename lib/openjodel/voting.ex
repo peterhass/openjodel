@@ -1,7 +1,7 @@
 defmodule Openjodel.Voting do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Openjodel.{Voting, Post}
+  alias Openjodel.{Voting, Post, User}
   
   schema "votings" do
     field :score, :integer
@@ -22,8 +22,12 @@ defmodule Openjodel.Voting do
 
   def changeset(%Voting{} = voting, attrs) do
     voting
-    |> cast(attrs, [:score])
+    |> cast(attrs, [:score, :user_id, :post_id])
     |> validate_inclusion(:score, [-1, 1, 0])
     |> validate_required(:score)
+    |> foreign_key_constraint(:user_id)
+    |> foreign_key_constraint(:post_id)
+    |> validate_required([:score, :user_id, :post_id])
+    |> unique_constraint(:user_post_voting_exists, name: :votings_post_id_user_id_index)
   end
 end

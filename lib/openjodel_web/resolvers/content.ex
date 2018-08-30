@@ -87,26 +87,17 @@ defmodule OpenjodelWeb.Resolvers.Content do
 
 
   def vote_post(_parent, %{id: id, score: score}, %{context: %{current_user: current_user}}) do
-    post = Post |> Repo.get!(id)
-
-    # TODO: possible locking problem?? (same user updates same post's vote at the same time)
-    case Repo.get_by(Voting, user_id: current_user.id, post_id: post.id) do
-      nil -> %Voting{user_id: current_user.id, post_id: post.id}
-      voting -> voting
+    Processes.Thread.vote_post(current_user, %{post_id: id, score: score})
+    |> case do
+      {:ok, _} = result -> result
+      {:error, _} -> throw("Unable to vote post (TODO: add proper error handling)")
     end
-    |> Map.put(:inserted_at, Calendar.DateTime.now_utc)
-    |> Voting.changeset(%{score: safer_score(score) |> IO.inspect})
-    |> Repo.insert_or_update!
 
     {
       :ok, 
       Post |> init_posts_query |> Repo.get!(id) |> PostWithVotingScore.from_post(current_user)
     }
   end
-
-  defp safer_score(score) when score > 0, do: 1
-  defp safer_score(score) when score < 0, do: -1
-  defp safer_score(_score), do: 0
 
 
   def init_posts_query(queryable) do
