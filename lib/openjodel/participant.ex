@@ -19,9 +19,11 @@ defmodule Openjodel.Participant do
 
   def changeset(%Participant{} = participant, attrs) do
     participant
-    |> cast(attrs, [:name])
+    |> cast(attrs, [:post_id, :user_id, :name])
     |> foreign_key_constraint(:post_id)
     |> foreign_key_constraint(:user_id)
-    |> validate_required([:name])
+    |> validate_required([:name, :post_id, :user_id])
+    |> unique_constraint(:name_in_thread_taken, name: :participants_post_id_name_index)
+    |> unique_constraint(:user_in_thread_exists, name: :participants_post_id_user_id_index)
   end
 end

@@ -5,7 +5,7 @@ defmodule OpenjodelWeb.Resolvers.Content do
   import Ecto.Query
 
   defmodule PostWithVotingScore do
-    defstruct [:id, :inserted_at, :message, :parent_id, :voting_score, :current_user_voting_score]
+    defstruct [:id, :inserted_at, :message, :parent_id, :participant, :voting_score, :current_user_voting_score]
 
     def from_posts(posts, %User{} = user \\ nil) when is_list(posts) do
       posts |> Enum.map(&(from_post(&1, user)))
@@ -17,7 +17,7 @@ defmodule OpenjodelWeb.Resolvers.Content do
     end
 
     def from_post(%Post{votings: votings} = post) when is_list(votings) do
-      %__MODULE__{id: post.id, inserted_at: post.inserted_at, message: post.message, parent_id: post.parent_id, voting_score: calculate_voting_score(votings)}
+      %__MODULE__{id: post.id, inserted_at: post.inserted_at, message: post.message, participant: post.participant, parent_id: post.parent_id, voting_score: calculate_voting_score(votings)}
     end
 
     def user_voting_score(votings, user_id) do
@@ -106,12 +106,13 @@ defmodule OpenjodelWeb.Resolvers.Content do
 
   defp safer_score(score) when score > 0, do: 1
   defp safer_score(score) when score < 0, do: -1
-  defp safer_score(score), do: 0
+  defp safer_score(_score), do: 0
 
 
-  defp init_posts_query(queryable) do
-    queryable |> from(preload: [votings: []])
+  def init_posts_query(queryable) do
+    queryable |> from(preload: [votings: [], participant: []])
   end
 
 
+  # TODO: participant not fetched everytime
 end

@@ -5,10 +5,19 @@ import Moment from 'react-moment'
 
 // TODO: extract linking of threads
 
-const Post = ({ message, insertedAt, votingScore, currentUserVotingScore: currentVote, id, children, onResetVote, onUpvote, onDownvote, CommentLink }) => (
+const Post = ({ message, insertedAt, votingScore, currentUserVotingScore: currentVote, participant, id, children, onResetVote, onUpvote, onDownvote, CommentLink }) => {
+  const { name: participantName } = participant || {}
+
+  return (
   <div className="posting col-12">
     <div className="row">
       <div className="posting-heading col-12">
+        { participantName &&
+          <span className="participant">
+
+            { participantName }
+          </span>
+        }
         <span className="time">
           <i className="fas fa-clock"></i>
           &nbsp;
@@ -43,6 +52,7 @@ const Post = ({ message, insertedAt, votingScore, currentUserVotingScore: curren
       </div>
     </div>
   </div>
-)
+  )
+}
 
 export default Post

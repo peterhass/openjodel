@@ -11,12 +11,18 @@ const FIND_THREAD = gql`
     votingScore
     currentUserVotingScore
     insertedAt
+    participant {
+      name
+    }
     children {
       id
       message
       votingScore
       currentUserVotingScore
       insertedAt
+      participant {
+        name
+      }
     }
   }
 }
@@ -31,12 +37,18 @@ const VOTE_POST_MUTATION = gql`
       votingScore
       insertedAt
       currentUserVotingScore
+      participant {
+        name
+      }
       children {
         id
         message
         votingScore
         currentUserVotingScore
         insertedAt
+        participant {
+          name
+        }
       }
     }
 
@@ -51,12 +63,18 @@ subscription onThreadChanged($postId: ID) {
     votingScore
     currentUserVotingScore
     insertedAt
+    participant {
+      name
+    }
     children {
       id
       message
       votingScore
       currentUserVotingScore
       insertedAt
+      participant {
+        name
+      }
     }
 
   }
@@ -73,6 +91,9 @@ mutation CreatePost($message: String, $parentId: ID) {
     insertedAt
     currentUserVotingScore
 
+    participant {
+      name
+    }
   }
 }
 `

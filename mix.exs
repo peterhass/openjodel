@@ -20,7 +20,7 @@ defmodule Openjodel.Mixfile do
   def application do
     [
       mod: {Openjodel.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :faker]
     ]
   end
 
@@ -45,7 +45,8 @@ defmodule Openjodel.Mixfile do
       {:absinthe, "~> 1.4.0"},
       {:absinthe_phoenix, "~> 1.4.0"},
       {:absinthe_plug, "~> 1.4"},
-      {:poison, "~> 3.1.0"}
+      {:poison, "~> 3.1.0"},
+      {:faker, "~> 0.10"}
     ]
   end
 

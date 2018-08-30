@@ -55,6 +55,14 @@
   margin-bottom: 0.5em;
 }
 
+.posting .posting-heading .participant::before {
+  content: "@";
+}
+
+.posting .posting-heading .participant {
+  margin-right: 1em;
+}
+
 .posting .posting-footer {
   margin-top: 0.5em;
 }
