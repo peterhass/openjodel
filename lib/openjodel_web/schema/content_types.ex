@@ -16,8 +16,25 @@ defmodule OpenjodelWeb.Schema.ContentTypes do
     field :current_user_voting_score, :integer
     field :participant, :participant
     # TODO: think about performance
-    field :children, list_of(:post) do
+    field :children, :paginated_posts do
+      arg :cursor, :cursor_input
       resolve &Resolvers.Content.list_thread_posts/3
     end
+  end
+
+  input_object :cursor_input do
+    field :before, :string
+    field :after, :string
+    field :limit, :integer
+  end
+
+  object :cursor do
+    field :before, :string
+    field :after, :string
+  end
+
+  object :paginated_posts do
+    field :posts, list_of(:post)
+    field :cursor, :cursor
   end
 end

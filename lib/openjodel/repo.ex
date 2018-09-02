@@ -1,5 +1,6 @@
 defmodule Openjodel.Repo do
   use Ecto.Repo, otp_app: :openjodel
+  use Paginator
 
   @doc """
   Dynamically loads the repository url from the

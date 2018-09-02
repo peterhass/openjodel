@@ -1,5 +1,5 @@
 defmodule OpenjodelWeb.Resolvers.Content do
-  alias Openjodel.{Repo, Post, Voting, User}
+  alias Openjodel.{Repo, Post, Voting, User, PaginatedPosts}
   alias Openjodel.Processes
   alias __MODULE__.PostWithVotingScore
   import Ecto.Query
@@ -56,35 +56,63 @@ defmodule OpenjodelWeb.Resolvers.Content do
   def create_post(_, post_attrs, %{context: %{current_user: current_user}}) do
     Processes.Thread.add_post(current_user, post_attrs)
     |> case do
-      {:ok, _} = result -> result
+      {:ok, post} -> {:ok, post}
       {:error, _} -> throw("Unable to create post (TODO: add proper error handling)")
     end
   end
 
-  def list_threads(_, _, %{context: %{current_user: current_user}}) do
-    {:ok, Post |> init_posts_query |> Post.parents |> Repo.all |> PostWithVotingScore.from_posts(current_user)}
+  def list_threads(_, arguments, %{context: %{current_user: current_user}}) do
+    cursor = arguments
+             |> case do
+               %{cursor: cursor} -> cursor
+               _ -> %{}
+             end
+    %{entries: threads, metadata: metadata} = Post
+              |> init_posts_query
+              |> Post.parents
+              |> Repo.paginate(cursor_fields: [:inserted_at, :id], sort_direction: :desc, limit: cursor[:limit] || 50, before: cursor[:before], after: cursor[:after])
+
+    IO.inspect("======== list_threads ===========")
+    IO.inspect(cursor)
+    IO.inspect(metadata)
+              
+    threads_with_voting_scores = PostWithVotingScore.from_posts(threads, current_user)
+
+    {:ok, Openjodel.PaginatedPosts.from_pagination(threads_with_voting_scores, metadata)}
   end
 
   def find_thread(_parent, %{id: id}, %{context: %{current_user: current_user}}) do
     {:ok, Post |> init_posts_query |> Repo.get!(id) |> PostWithVotingScore.from_post(current_user)}
   end
 
-
-  def list_posts(_parent, _, %{context: %{current_user: current_user}}) do
-    {:ok, Post |> init_posts_query |> Repo.all |> PostWithVotingScore.from_posts(current_user)}
-  end
-  def list_thread_posts(post, _, %{context: %{current_user: current_user}}) do
-    {:ok, Post |> init_posts_query |> where([p], p.parent_id == ^post.id) |> Repo.all |> PostWithVotingScore.from_posts(current_user)}
+  # transform resource (from subscription trigger) for current user
+  def resource_for_user(%Post{id: id}, _, %{context: %{current_user: current_user}}) do
+    {:ok, Post |> init_posts_query |> Repo.get!(id) |> PostWithVotingScore.from_post(current_user)}
   end
 
-  
-  def list_thread_posts(post, args, %{context: context}) do
-    IO.inspect("list_thread_posts ...")
-    IO.inspect(context)
-    list_thread_posts(post, args, %{context: context})
+  def resource_for_user(%PostWithVotingScore{id: id}, args, context) do
+    resource_for_user(%Post{id: id}, args, context)
   end
 
+  def list_thread_posts(%{id: thread_id}, arguments, %{context: %{current_user: current_user}}) do
+    cursor = arguments
+             |> case do
+               %{cursor: cursor} -> cursor
+               _ -> %{}
+             end
 
+    %{entries: posts, metadata: metadata} = Post
+    |> init_posts_query(reverse_order: true)
+    |> where([p], p.parent_id == ^thread_id)
+    |> Repo.paginate(cursor_fields: [:inserted_at, :id], sort_direction: :asc, limit: cursor[:limit] || 50, before: cursor[:before], after: cursor[:after])
+
+    IO.inspect("list_thread_posts")
+    IO.inspect(cursor)
+
+    posts_with_voting_scores = PostWithVotingScore.from_posts(posts, current_user)
+
+    {:ok, Openjodel.PaginatedPosts.from_pagination(posts_with_voting_scores, metadata)}
+  end
 
   def vote_post(_parent, %{id: id, score: score}, %{context: %{current_user: current_user}}) do
     Processes.Thread.vote_post(current_user, %{post_id: id, score: score})
@@ -100,8 +128,14 @@ defmodule OpenjodelWeb.Resolvers.Content do
   end
 
 
-  def init_posts_query(queryable) do
-    queryable |> from(preload: [votings: [], participant: []])
+  def init_posts_query(queryable, opts \\ []) do
+    order_by = case opts[:reverse_order] do
+      true -> [asc: :inserted_at, asc: :id]
+      _ -> [desc: :inserted_at, desc: :id]
+    end
+
+  
+    queryable |> from(preload: [votings: [], participant: []], order_by: ^order_by)
   end
 
 

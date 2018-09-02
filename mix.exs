@@ -46,7 +46,8 @@ defmodule Openjodel.Mixfile do
       {:absinthe_phoenix, "~> 1.4.0"},
       {:absinthe_plug, "~> 1.4"},
       {:poison, "~> 3.1.0"},
-      {:faker, "~> 0.10"}
+      {:faker, "~> 0.10"},
+      {:paginator, "~> 0.4"}
     ]
   end
 

@@ -21,7 +21,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 
 const App = () => (
   <div className="container-fluid">
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light topnav">
       <div className="navbar-collapse">
         <ul className="navbar-nav mr-auto">
           <li className="nav-item">

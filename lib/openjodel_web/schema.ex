@@ -16,27 +16,8 @@ defmodule OpenjodelWeb.Schema do
   end
 
   subscription do
-    field :thread_changed, :post do
-      arg :post_id, non_null(:id)
-
-      config fn args, _ ->
-        {:ok, topic: args.post_id}
-      end
-
-      trigger :vote_post, topic: fn post ->
-        post.parent_id || post.id
-      end
-
-      trigger :create_post, topic: fn post ->
-        post.parent_id
-      end
-
-      resolve fn parent, args, res ->
-        Resolvers.Content.find_thread(parent, %{id: args.post_id}, res)
-      end
-    end
-
-    field :threads_changed, list_of(:post) do
+    
+    field :thread_changes, :post do
       config fn args, _ ->
         {:ok, topic: :is_thread}
       end
@@ -44,13 +25,45 @@ defmodule OpenjodelWeb.Schema do
       trigger :vote_post, topic: fn post ->
         case post.parent_id do
           nil -> :is_thread
-          _ -> :is_post 
+          _ -> :is_post
         end
       end
 
-      trigger :create_thread, topic: fn _ -> :is_thread end 
+      resolve &Resolvers.Content.resource_for_user/3
+    end
 
-      resolve &Resolvers.Content.list_threads/3
+    field :thread_post_changes, :post do
+      arg :thread_id, non_null(:id)
+
+      config fn args, _ ->
+        {:ok, topic: args.thread_id}
+      end
+
+
+      trigger :vote_post, topic: fn post ->
+        post.parent_id
+      end
+      
+      resolve &Resolvers.Content.resource_for_user/3
+
+    end
+
+    field :thread_added, :post do
+      config fn args, _ ->
+        {:ok, topic: :is_thread}
+      end
+
+      trigger :create_thread, topic: fn thread -> :is_thread end
+    end
+
+    field :post_added, :post do
+      arg :thread_id, non_null(:id)
+
+      config fn args, _ ->
+        {:ok, topic: args.thread_id}
+      end
+
+      trigger :create_post, topic: fn post -> post.parent_id end
     end
   end
 
@@ -87,19 +100,17 @@ defmodule OpenjodelWeb.Schema do
   end
 
   query do
-    @desc "Get all posts"
-    field :posts, list_of(:post) do
-      resolve &Resolvers.Content.list_posts/3
-    end
-
-    @desc "Get a thread post"
+    @desc "Get a thread with children"
     field :thread, :post do
       arg :id, non_null(:id)
+
       resolve &Resolvers.Content.find_thread/3
     end
 
     @desc "Get all thread posts"
-    field :threads, list_of(:post) do
+    field :threads, :paginated_posts do
+      arg :cursor, :cursor_input
+    
       resolve &Resolvers.Content.list_threads/3
     end
   end

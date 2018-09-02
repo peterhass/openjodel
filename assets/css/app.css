@@ -11,19 +11,11 @@
 }
 
 .content-box {
-
 }
 
-.screen-heading {
-  height: 10vh;
 
-  border-bottom: 1px solid silver;
-
-  text-align: center;
-
-  padding-bottom: 1em;
-
-  background-color: white;
+nav.topnav {
+  height: 5vh;
 }
 
 .list-group-item.green {
@@ -34,6 +26,27 @@
 .openjodel-list {
 
   color: #fff;
+}
+
+.openjodel-list.openjodel-whole-screen .screen-body {
+  height: 75vh;
+}
+
+.openjodel-12-screen {
+  height: 95vh;
+}
+
+.openjodel-10-screen {
+  height: 78vh;
+}
+
+.openjodel-2-screen {
+  height: 15.333333333vh
+}
+
+.screen-body {
+  height: 100%;
+  overflow: hidden;
 }
 
 .openjodel-list .list-group-item {

@@ -2,27 +2,29 @@ import React from 'react'
 import Thread from '../components/Thread.js'
 import gql from 'graphql-tag'
 import { Query, Mutation } from 'react-apollo'
+import _ from 'lodash'
 
 const FIND_THREAD = gql`
- query Thread($id: String!) {
+ query Thread($id: String!, $cursor: CursorInput) {
    thread(id: $id) {
-    id
-    message
-    votingScore
-    currentUserVotingScore
-    insertedAt
-    participant {
-      name
-    }
-    children {
-      id
-      message
-      votingScore
-      currentUserVotingScore
-      insertedAt
-      participant {
-        name
-      }
+     id
+     message
+     insertedAt
+     votingScore
+     currentUserVotingScore
+     parentId
+     children(cursor: $cursor) {
+       cursor {
+         before
+         after
+       }
+       posts {
+         id
+         message
+         votingScore
+         currentUserVotingScore
+         insertedAt
+       }
     }
   }
 }
@@ -37,46 +39,34 @@ const VOTE_POST_MUTATION = gql`
       votingScore
       insertedAt
       currentUserVotingScore
-      participant {
-        name
-      }
-      children {
-        id
-        message
-        votingScore
-        currentUserVotingScore
-        insertedAt
-        participant {
-          name
-        }
-      }
     }
 
   }
 `
 
-const THREAD_SUBSCRIPTION = gql`
-subscription onThreadChanged($postId: ID) {
-  threadChanged(postId: $postId) {
+
+const POST_CHANGES_SUBSCRIPTION = gql`
+subscription onPostChanged($threadId: ID) {
+  threadPostChanges(threadId: $threadId) {
     id
     message
     votingScore
-    currentUserVotingScore
+    parentId
     insertedAt
-    participant {
-      name
-    }
-    children {
-      id
-      message
-      votingScore
-      currentUserVotingScore
-      insertedAt
-      participant {
-        name
-      }
-    }
+    currentUserVotingScore
+  }
+}
+`
 
+const POST_ADDED_SUBSCRIPTION = gql`
+subscription onPostAdded($threadId: ID) {
+  postAdded(threadId: $threadId) {
+    id
+    message
+    votingScore
+    parentId
+    insertedAt
+    currentUserVotingScore
   }
 }
 `
@@ -99,10 +89,20 @@ mutation CreatePost($message: String, $parentId: ID) {
 `
 
 const ThreadContainer = ({match}) => (
-  <Query query={FIND_THREAD} variables={{id: match.params.threadId}}>
-    {({ loading, error, data, subscribeToMore }) => {
+  <Query
+    query={FIND_THREAD}
+    variables={{
+      id: match.params.threadId,
+      cursor: {
+        limit: 9
+      }
+      
+    }}>
+    {({ loading, error, data, subscribeToMore, fetchMore }) => {
       if (loading) return "Loading ..."
       if (error) return `Error! ${error.message}`
+
+      console.log({data})
 
       const createPostMutation = (...args) => { console.log(args) }
       return (
@@ -115,18 +115,68 @@ const ThreadContainer = ({match}) => (
             {mutation => (
               <Thread
                 thread={data.thread}
-                posts={data.thread.children}
+                posts={data.thread.children.posts}
                 onPostVoting={(postId, score) => mutation({variables: {id: postId, score: score}})}
                 onCreatePost={({message}) => createPostMutation({variables: {message, parentId: data.thread.id}})}
-                
+                onLoadMore={() => {
+                  return fetchMore({
+                    query: FIND_THREAD,
+                    variables: { 
+                      id: match.params.threadId,
+                      cursor: {
+                        after: data.thread.children.cursor.after,
+                        limit: 20
+                        //before: cursor.before
+                      }
+                    },
+                    updateQuery: (prev, { fetchMoreResult }) => {
+
+                      return Object.assign({}, prev, {
+                        thread: Object.assign({}, prev.thread, {
+                          children: Object.assign({}, prev.thread.children, {
+                            cursor: fetchMoreResult.thread.children.cursor,
+                            posts: _.uniqBy([...prev.thread.children.posts, ...fetchMoreResult.thread.children.posts], 'id')
+                          })
+                        })
+                      })
+                    }
+                  })
+                }}
+
                 subscribeToPostChanges={() => {
                   subscribeToMore({
-                    document: THREAD_SUBSCRIPTION,
-                    variables: { postId: match.params.threadId },
+                    document: POST_CHANGES_SUBSCRIPTION,
+                    variables: { threadId: match.params.threadId },
                     updateQuery: (prev, { subscriptionData }) => {
                       if (!subscriptionData.data) return prev
-                      
-                      return Object.assign({}, prev, { thread: subscriptionData.data.threadChanged })
+
+                      const subscriptionPost = subscriptionData.data.threadPostChanges
+
+                      return _.merge({}, prev, {
+                        thread: {
+                          children: {
+                            posts: prev.thread.children.posts.map((post) => (post.id == subscriptionPost.id) ? subscriptionPost : post)
+                          }
+                        }
+                      })
+                    }
+                  })
+
+                  subscribeToMore({
+                    document: POST_ADDED_SUBSCRIPTION,
+                    variables: { threadId: match.params.threadId },
+                    updateQuery: (prev, { subscriptionData }) => {
+                      if (!subscriptionData.data) return prev
+
+                      const subscriptionPost = subscriptionData.data.postAdded
+
+                      return _.merge({}, prev, {
+                        thread: {
+                          children: {
+                            posts: [...prev.thread.children.posts, subscriptionPost]
+                          }
+                        }
+                      })
                     }
                   })
                 }}
