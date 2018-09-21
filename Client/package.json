@@ -1,0 +1,33 @@
+{
+  "name": "empty-project-template",
+  "main": "node_modules/expo/AppEntry.js",
+  "private": true,
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "eject": "expo eject"
+  },
+  "dependencies": {
+    "@absinthe/socket-apollo-link": "^0.1.11",
+    "apollo-boost": "^0.1.16",
+    "apollo-cache-inmemory": "^1.2.10",
+    "apollo-client": "^2.4.2",
+    "apollo-link": "^1.2.3",
+    "apollo-link-context": "^1.0.9",
+    "apollo-link-error": "^1.1.1",
+    "apollo-link-ws": "^1.0.9",
+    "expo": "^30.0.1",
+    "graphql": "^14.0.2",
+    "graphql-tag": "^2.9.2",
+    "react": "16.3.1",
+    "react-apollo": "^2.1.11",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-30.0.0.tar.gz",
+    "react-router-native": "^4.3.0",
+    "subscriptions-transport-ws": "^0.9.15"
+  },
+  "devDependencies": {
+    "babel-preset-es2015-node6": "^0.4.0",
+    "babel-preset-stage-0": "^6.24.1"
+  }
+}

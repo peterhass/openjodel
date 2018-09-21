@@ -1,0 +1,8 @@
+{
+  "presets": ["es2015-node6", "stage-0", "babel-preset-expo"],
+  "env": {
+    "development": {
+      "plugins": ["transform-react-jsx-source"]
+    }
+  }
+}
