@@ -5,18 +5,6 @@ import LoginContainer from './LoginContainer'
 import ThreadListContainer from './ThreadListContainer'
 import { getAuthToken } from '../apollo_client'
 
-const auth = {
-  get isAuthenticated() { return !!getAuthToken() } 
-}
-
-const _PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route {...rest} render={(props) => (
-    auth.isAuthenticated === true
-    ? <Component {...props} />
-    : <Redirect to='/login' />
-  )} />
-)
-
 class PrivateRoute extends React.Component {
   constructor() {
     super()

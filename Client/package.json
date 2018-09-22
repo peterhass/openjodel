@@ -20,8 +20,11 @@
     "expo": "^30.0.1",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.9.2",
+    "lodash": "^4.17.11",
+    "moment": "^2.22.2",
     "react": "16.3.1",
     "react-apollo": "^2.1.11",
+    "react-moment": "^0.7.9",
     "react-native": "https://github.com/expo/react-native/archive/sdk-30.0.0.tar.gz",
     "react-router-native": "^4.3.0",
     "subscriptions-transport-ws": "^0.9.15"

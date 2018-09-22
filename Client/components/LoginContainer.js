@@ -54,7 +54,7 @@ export default class LoginContainer extends React.Component {
   _confirm(data) {
     let token = data.login ? data.login.token : data.signup.token
 
-    setAuthToken(token)
-    this.props.history.push('/')
+    setAuthToken(token).then(() => this.props.history.push('/'))
   }
+  
 }
