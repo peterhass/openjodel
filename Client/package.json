@@ -16,6 +16,7 @@
     "apollo-link": "^1.2.3",
     "apollo-link-context": "^1.0.9",
     "apollo-link-error": "^1.1.1",
+    "apollo-link-http": "^1.5.5",
     "apollo-link-ws": "^1.0.9",
     "expo": "^30.0.1",
     "graphql": "^14.0.2",

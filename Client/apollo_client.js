@@ -12,15 +12,45 @@ import { createAbsintheSocketLink } from '@absinthe/socket-apollo-link'
 import { SecureStore } from 'expo'
 
 const HttpEndpoint = {
-  uri: "http://10.0.0.42:4000/api/graphql"
+  uri: "http://10.0.0.24:4000/api/graphql"
 }
 
 const SocketEndpoint = {
-  uri: "ws://10.0.0.42:4000/socket"
+  uri: "ws://10.0.0.24:4000/socket"
 }
 
-const setAuthToken = (token) => SecureStore.setItemAsync('auth-token', token)
-const getAuthToken = () => SecureStore.getItemAsync('auth-token')
+class Auth {
+  constructor() {
+    this.subscribers = []
+  }
+
+  subscribe(fn) {
+    return this.subscribers.push(fn)
+  }
+
+  unsubscribe(fn) {
+    this.subscribers = this.subscribers.filter((item) => item !== fn)
+  }
+
+  setTokenAsync(token) {
+    const promise = token !== null ? SecureStore.setItemAsync('auth-token', token)
+ : SecureStore.deleteItemAsync('auth-token')
+
+    return promise.then(() => {
+      this.notifyAll(token)
+    })
+  }
+
+  getTokenAsync() {
+    return SecureStore.getItemAsync('auth-token')
+  }
+  
+  notifyAll(value) {
+    this.subscribers.forEach(subscriber => subscriber(value))
+  }
+}
+
+const auth = new Auth()
 
 const cache = new InMemoryCache()
 const link = ApolloLink.from([
@@ -36,7 +66,7 @@ const link = ApolloLink.from([
 
   setContext((_, { headers }) => (
     // get token from users machine
-    getAuthToken().then(token => ({
+    auth.getTokenAsync().then(token => ({
       headers: {
         ...headers,
         authorization: token ? `Bearer ${token}` : ""
@@ -51,8 +81,9 @@ const link = ApolloLink.from([
       const { kind, operation } = getMainDefinition(query)
       return kind === 'OperationDefinition' && operation === 'subscription'
     },
+    // TODO: check if param resolution supports promises (probabily not)
     createAbsintheSocketLink(AbsintheSocket.create(
-      new PhoenixSocket(SocketEndpoint.uri, { params: { token: getAuthToken() } })
+      new PhoenixSocket(SocketEndpoint.uri, { params: { token: auth.getTokenAsync() } })
     )),
 
     new HttpLink({
@@ -68,6 +99,6 @@ const client = new ApolloClient({
   cache
 })
 
-export { getAuthToken, setAuthToken }
+export { client, auth }
 export default client
 

@@ -1,19 +1,29 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import { Route, Link, Redirect } from 'react-router-native'
 import LoginContainer from './LoginContainer'
 import ThreadListContainer from './ThreadListContainer'
-import { getAuthToken } from '../apollo_client'
-
+import { auth } from '../apollo_client'
+import { SecureStore } from 'expo'
 class PrivateRoute extends React.Component {
   constructor() {
     super()
 
+    this.checkAuthentication = this.checkAuthentication.bind(this)
     this.state = { isAuthenticated: null }
   }
 
   componentDidMount() {
-    getAuthToken().then((authenticated) => this.setState({ isAuthenticated: !!authenticated }))
+    auth.getTokenAsync().then(this.checkAuthentication)
+    auth.subscribe(this.checkAuthentication)
+  }
+
+  componentWillUnmount() {
+    auth.unsubscribe(this.checkAuthentication)
+  }
+
+  checkAuthentication(authenticated) {
+    this.setState({ isAuthenticated: !!authenticated })
   }
 
   render() {
@@ -43,6 +53,7 @@ export default class Root extends React.Component {
           <Link to="/threads">
             <Text>Threads</Text>
           </Link>
+          <Button title="reset" onPress={() => auth.setTokenAsync(null)} />
         </View>
 
         <Route exact path="/login" component={LoginContainer} />
