@@ -3,6 +3,7 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 import { Route, Link, Redirect } from 'react-router-native'
 import LoginContainer from './LoginContainer'
 import ThreadListContainer from './ThreadListContainer'
+import ThreadContainer from './ThreadContainer'
 import { auth } from '../apollo_client'
 import { SecureStore } from 'expo'
 class PrivateRoute extends React.Component {
@@ -58,6 +59,7 @@ export default class Root extends React.Component {
 
         <Route exact path="/login" component={LoginContainer} />
         <PrivateRoute exact path="/threads" component={ThreadListContainer} />
+        <PrivateRoute exact path="/threads/:threadId" component={ThreadContainer} />
       </View>
     );
   }

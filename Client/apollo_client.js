@@ -12,11 +12,11 @@ import { createAbsintheSocketLink } from '@absinthe/socket-apollo-link'
 import { SecureStore } from 'expo'
 
 const HttpEndpoint = {
-  uri: "http://10.0.0.24:4000/api/graphql"
+  uri: "http://10.0.0.42:4000/api/graphql"
 }
 
 const SocketEndpoint = {
-  uri: "ws://10.0.0.24:4000/socket"
+  uri: "ws://10.0.0.42:4000/socket"
 }
 
 class Auth {

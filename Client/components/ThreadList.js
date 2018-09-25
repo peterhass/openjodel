@@ -25,6 +25,9 @@ export default class ThreadList extends React.Component {
         renderItem={this.rowRenderer.bind(this)}
         keyExtractor={thread => thread.id}
         onEndReached={this.loadMoreRows.bind(this)}
+
+
+        ItemSeparatorComponent={() => (<View style={{ height: 10, backgroundColor: 'white' }} />)}
       />
     )
   }
@@ -35,6 +38,7 @@ export default class ThreadList extends React.Component {
     return (
       <Post
         { ...thread }
+        children={thread.children.posts || []}
         onUpvote={() => onPostVoting(thread.id, 1)}
         onDownvote={() => onPostVoting(thread.id, -1)}
         onResetVote={() => onPostVoting(thread.id, 0)}
