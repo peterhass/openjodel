@@ -52,53 +52,55 @@ class Auth {
 
 const auth = new Auth()
 
-const cache = new InMemoryCache()
-const link = ApolloLink.from([
-  onError(({ graphQLErrors, networkError  }) => {
-    if (graphQLErrors)
-      graphQLErrors.map(({ message, locations, path }) => {
-        console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
-      })
+const buildClient = () => {
 
-    if (networkError)
-      console.error(`[Network error]: ${networkError}`)
-  }),
+  return auth.getTokenAsync().then((token) => {
+    const cache = new InMemoryCache()
+    const link = ApolloLink.from([
+      onError(({ graphQLErrors, networkError  }) => {
+        if (graphQLErrors)
+          graphQLErrors.map(({ message, locations, path }) => {
+            console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
+          })
 
-  setContext((_, { headers }) => (
-    // get token from users machine
-    auth.getTokenAsync().then(token => ({
-      headers: {
-        ...headers,
-        authorization: token ? `Bearer ${token}` : ""
-      }
-    }))
-  )),
+        if (networkError)
+          console.error(`[Network error]: ${networkError}`)
+      }),
 
-  
+      setContext((_, { headers }) => (
+        // get token from users machine
+        auth.getTokenAsync().then(token => ({
+          headers: {
+            ...headers,
+            authorization: token ? `Bearer ${token}` : ""
+          }
+        }))
+      )),
 
-  split(
-    ({ query }) => {
-      const { kind, operation } = getMainDefinition(query)
-      return kind === 'OperationDefinition' && operation === 'subscription'
-    },
-    // TODO: check if param resolution supports promises (probabily not)
-    createAbsintheSocketLink(AbsintheSocket.create(
-      new PhoenixSocket(SocketEndpoint.uri, { params: { token: auth.getTokenAsync() } })
-    )),
+      
 
-    new HttpLink({
-      uri: HttpEndpoint.uri 
+      split(
+        ({ query }) => {
+          const { kind, operation } = getMainDefinition(query)
+          return kind === 'OperationDefinition' && operation === 'subscription'
+        },
+        createAbsintheSocketLink(AbsintheSocket.create(
+          new PhoenixSocket(SocketEndpoint.uri, { params: { token } })
+        )),
+
+        new HttpLink({
+          uri: HttpEndpoint.uri 
+        })
+
+      )
+    ])
+
+    return new ApolloClient({
+      link,
+      cache
     })
+  })
 
-  )
-])
-
-
-const client = new ApolloClient({
-  link,
-  cache
-})
-
-export { client, auth }
-export default client
-
+}
+export { auth, buildClient }
+export default buildClient
