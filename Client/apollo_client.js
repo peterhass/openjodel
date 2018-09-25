@@ -69,12 +69,12 @@ const buildClient = () => {
 
       setContext((_, { headers }) => (
         // get token from users machine
-        auth.getTokenAsync().then(token => ({
+        {
           headers: {
             ...headers,
             authorization: token ? `Bearer ${token}` : ""
           }
-        }))
+        }
       )),
 
       

@@ -35,6 +35,8 @@ export default class Thread extends React.Component {
   }
 
   rowRenderer({item: post}) {
+    const { onPostVoting } = this.props
+    
     return (<Post
       {...post}
       onUpvote={() => onPostVoting(post.id, 1)}
