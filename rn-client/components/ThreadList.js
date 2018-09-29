@@ -20,15 +20,20 @@ export default class ThreadList extends React.Component {
     const { isLoading } = this.state
 
     return (
-      <FlatList
-        data={threads}
-        renderItem={this.rowRenderer.bind(this)}
-        keyExtractor={thread => thread.id}
-        onEndReached={this.loadMoreRows.bind(this)}
+      <View>
+        <NewThreadLink>
+          <Text>+</Text>
+        </NewThreadLink>
+        <FlatList
+          data={threads}
+          renderItem={this.rowRenderer.bind(this)}
+          keyExtractor={thread => thread.id}
+          onEndReached={this.loadMoreRows.bind(this)}
 
 
-        ItemSeparatorComponent={() => (<View style={{ height: 10, backgroundColor: 'white' }} />)}
-      />
+          ItemSeparatorComponent={() => (<View style={{ height: 10, backgroundColor: 'white' }} />)}
+        />
+      </View>
     )
   }
 

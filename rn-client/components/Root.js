@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { Route, Link, Redirect } from 'react-router-native'
+import { Route, Link, Redirect, Switch } from 'react-router-native'
 import LoginContainer from './LoginContainer'
 import ThreadListContainer from './ThreadListContainer'
+import NewThreadContainer from './NewThreadContainer'
 import ThreadContainer from './ThreadContainer'
 import { auth } from '../apollo_client'
 import { SecureStore } from 'expo'
@@ -57,9 +58,12 @@ export default class Root extends React.Component {
           <Button title="reset" onPress={() => auth.setTokenAsync(null)} />
         </View>
 
-        <Route exact path="/login" component={LoginContainer} />
-        <PrivateRoute exact path="/threads" component={ThreadListContainer} />
-        <PrivateRoute exact path="/threads/:threadId" component={ThreadContainer} />
+        <Switch>
+          <Route exact path="/login" component={LoginContainer} />
+          <PrivateRoute exact path="/threads" component={ThreadListContainer} />
+          <PrivateRoute exact path="/threads/new" component={NewThreadContainer} />
+          <PrivateRoute path="/threads/:threadId" component={ThreadContainer} />
+        </Switch>
       </View>
     );
   }
