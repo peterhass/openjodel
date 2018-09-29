@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, FlatList, Button, StyleSheet } from 'react-native'
 import Moment from 'react-moment'
 import Post from './Post'
+import NewPost from './NewPost'
 
 export default class Thread extends React.Component {
   render() {
@@ -9,14 +10,19 @@ export default class Thread extends React.Component {
     const { thread, posts, onPostVoting, onCreatePost, onLoadMore } = this.props
 
     return (
-      <FlatList
-        data={posts}
-        renderItem={this.rowRenderer.bind(this)}
-        keyExtractor={post => post.id}
-        onEndReached={this.loadMoreRows.bind(this)}
+      <View>
+        <FlatList
+          data={posts}
+          renderItem={this.rowRenderer.bind(this)}
+          keyExtractor={post => post.id}
+          onEndReached={this.loadMoreRows.bind(this)}
 
-        ListHeaderComponent={this.threadPostRenderer(thread)}
-      />
+          ListHeaderComponent={this.threadPostRenderer(thread)}
+        />
+        <NewPost
+          onCreatePost={onCreatePost}
+        />
+      </View>
     )
   }
 
