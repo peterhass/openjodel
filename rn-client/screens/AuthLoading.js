@@ -2,7 +2,7 @@ import React from 'react'
 import { ActivityIndicator, View, StatusBar } from 'react-native'
 import { auth } from '../apollo_client'
 
-export default class AuthLoadingScreen extends React.Component {
+export default class AuthLoading extends React.Component {
   constructor() {
     super()
 

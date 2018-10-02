@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, FlatList, TouchableHighlight } from 'react-native'
-import Post from './Post'
+import Post from '../components/Post'
 
 export default class ThreadList extends React.Component {
   constructor() {

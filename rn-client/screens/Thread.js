@@ -1,8 +1,8 @@
 import React from 'react'
 import { View, Text, FlatList, Button, StyleSheet } from 'react-native'
 import Moment from 'react-moment'
-import Post from './Post'
-import NewPost from './NewPost'
+import Post from '../components/Post'
+import NewPost from '../components/NewPost'
 
 export default class Thread extends React.Component {
   render() {

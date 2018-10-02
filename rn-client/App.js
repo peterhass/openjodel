@@ -2,11 +2,11 @@ import React from 'react';
 import buildClient from './apollo_client'
 import { ApolloProvider } from 'react-apollo'
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation'
-import ThreadListContainer from './components/ThreadListContainer'
-import LoginContainer from './components/LoginContainer'
-import AuthLoadingScreen from './components/AuthLoadingScreen'
-import NewThreadContainer from './components/NewThreadContainer'
-import ThreadContainer from './components/ThreadContainer'
+import ThreadListContainer from './screens/ThreadListContainer'
+import LoginContainer from './screens/LoginContainer'
+import AuthLoading from './screens/AuthLoading'
+import NewThreadContainer from './screens/NewThreadContainer'
+import ThreadContainer from './screens/ThreadContainer'
 
 const AppStack = createStackNavigator({
   Home: ThreadListContainer,
@@ -20,7 +20,7 @@ const AuthStack = createStackNavigator({
 
 const Navigator = createSwitchNavigator(
   {
-    AuthLoading: AuthLoadingScreen,
+    AuthLoading: AuthLoading,
     App: AppStack,
     Auth: AuthStack
   },
