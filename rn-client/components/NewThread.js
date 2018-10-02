@@ -11,7 +11,7 @@ export default class NewThread extends React.Component {
     const { onCreateThread } = this.props
     const { message } = this.state
 
-    return (<View>
+    return (<View style={{ width: '100%', height: '100%' }}>
       <TextInput 
         multiline={true}
         numberOfLines={4}

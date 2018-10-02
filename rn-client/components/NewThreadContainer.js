@@ -23,7 +23,7 @@ class NewThreadContainer extends Component {
         mutation={CREATE_THREAD_MUTATION}
         refetchQueries={['GetThreads']}
         onCompleted={({ createThread: thread }) => {
-          this.props.history.push(`/threads/${thread.id}`)
+          this.props.navigation.navigate('Thread', { id: thread.id })
         }}
       >
         {mutation => (

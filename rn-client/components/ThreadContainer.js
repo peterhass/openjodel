@@ -88,11 +88,11 @@ mutation CreatePost($message: String, $parentId: ID) {
 }
 `
 
-const ThreadContainer = ({match}) => (
+const ThreadContainer = ({navigation}) => (
   <Query
     query={FIND_THREAD}
     variables={{
-      id: match.params.threadId,
+      id: navigation.getParam('id'),
       cursor: {
         limit: 9
       }
@@ -102,9 +102,6 @@ const ThreadContainer = ({match}) => (
       if (loading) return "Loading ..."
       if (error) return `Error! ${error.message}`
 
-      console.log({data})
-
-      const createPostMutation = (...args) => { console.log(args) }
       return (
         <Mutation 
           mutation={CREATE_POST_MUTATION}
@@ -122,7 +119,7 @@ const ThreadContainer = ({match}) => (
                   return fetchMore({
                     query: FIND_THREAD,
                     variables: { 
-                      id: match.params.threadId,
+                      id: navigation.getParam('id'),
                       cursor: {
                         after: data.thread.children.cursor.after,
                         limit: 20
@@ -146,7 +143,7 @@ const ThreadContainer = ({match}) => (
                 subscribeToPostChanges={() => {
                   subscribeToMore({
                     document: POST_CHANGES_SUBSCRIPTION,
-                    variables: { threadId: match.params.threadId },
+                    variables: { threadId: navigation.getParam('id') },
                     updateQuery: (prev, { subscriptionData }) => {
                       if (!subscriptionData.data) return prev
 
@@ -164,7 +161,7 @@ const ThreadContainer = ({match}) => (
 
                   subscribeToMore({
                     document: POST_ADDED_SUBSCRIPTION,
-                    variables: { threadId: match.params.threadId },
+                    variables: { threadId: navigation.getParam('id') },
                     updateQuery: (prev, { subscriptionData }) => {
                       if (!subscriptionData.data) return prev
 

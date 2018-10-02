@@ -12,7 +12,7 @@ export default class Login extends React.Component {
     const { restoreToken } = this.state
 
     return (
-      <View>
+      <View style={{ width: '100%', height: '100%' }}>
         <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-between'}}>
           <View style={styles.startGroup}>
             <Button title="Start" style={{backgroundColor: 'black'}} onPress={() => onSignup()} />

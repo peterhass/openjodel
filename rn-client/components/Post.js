@@ -4,12 +4,12 @@ import Moment from 'react-moment'
 
 class LinkBox extends React.Component {
   render() {
-    const { CommentLink, id, children, ...rest } = this.props
+    const { onNavigateComments, id, children } = this.props
 
-    if (CommentLink && id)
-      return (<CommentLink {...rest} threadId={id}>{children}</CommentLink>)
+    if (onNavigateComments && id)
+      return (<TouchableHighlight onPress={() => onNavigateComments(id)}>{children}</TouchableHighlight>)
 
-    return (<View {...rest}>{children}</View>)
+    return (<View>{children}</View>)
   }
 }
 
@@ -26,32 +26,34 @@ export default class Post extends React.Component {
       onResetVote,
       onUpvote,
       onDownvote,
-      CommentLink
+      onNavigateComments
     } = this.props
 
     const { name: participantName } = participant || {}
 
     return (
-      <LinkBox id={id} CommentLink={CommentLink} component={TouchableOpacity} style={styles.box}>
-        <View style={[styles.header]}>
-          <Moment fromNow element={Text} style={[styles.boxText, styles.headerText]}>{ insertedAt }</Moment>         
-        </View>
+      <LinkBox id={id} onNavigateComments={onNavigateComments}>
+        <View style={styles.box}>
+          <View style={[styles.header]}>
+            <Moment fromNow element={Text} style={[styles.boxText, styles.headerText]}>{ insertedAt }</Moment>         
+          </View>
 
-        <View style={styles.body}>
-          <View style={styles.messageBox}>
-            <Text style={[styles.boxText, styles.messageText]}>{ message }</Text>
+          <View style={styles.body}>
+            <View style={styles.messageBox}>
+              <Text style={[styles.boxText, styles.messageText]}>{ message }</Text>
+            </View>
+            <View style={styles.votingBox}>
+              <Button color={currentVote == 1 ? 'red' : 'white'} title="↑" onPress={currentVote == 1 ? onResetVote : onUpvote} />
+              <Text style={[styles.boxText, styles.voting]}>{ votingScore }</Text>
+              <Button color={currentVote == -1 ? 'red' : 'white'} title="↓" onPress={currentVote == -1 ? onResetVote : onDownvote} />
+            </View>
           </View>
-          <View style={styles.votingBox}>
-            <Button color={currentVote == 1 ? 'red' : 'white'} title="↑" onPress={currentVote == 1 ? onResetVote : onUpvote} />
-            <Text style={[styles.boxText, styles.voting]}>{ votingScore }</Text>
-            <Button color={currentVote == -1 ? 'red' : 'white'} title="↓" onPress={currentVote == -1 ? onResetVote : onDownvote} />
-          </View>
+          { onNavigateComments && 
+            <View style={styles.footer}>
+              <Text style={[styles.boxText]}>Ϡ { children.length }</Text>
+            </View>
+          }
         </View>
-        { CommentLink && 
-          <View style={styles.footer}>
-            <Text style={[styles.boxText]}>Ϡ { children.length }</Text>
-          </View>
-        }
       </LinkBox>
     )
   }

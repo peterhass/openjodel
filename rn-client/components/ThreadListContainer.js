@@ -1,17 +1,9 @@
 import React from 'react'
 import ThreadList from './ThreadList'
-import { Link } from 'react-router-native'
 import gql from 'graphql-tag'
 import { Query, Mutation } from 'react-apollo'
 import _ from 'lodash'
 
-const CommentLink = ({ threadId, children, ...linkProps }) => (
-  <Link to={`/threads/${threadId}`} {...linkProps}>{children}</Link>
-)
-
-const NewThreadLink = ({ children, ...linkProps }) => (
-  <Link to="/threads/new" {...linkProps}>{children}</Link>
-)
 
 const GET_THREADS = gql`
  query GetThreads($cursor: CursorInput) {
@@ -99,7 +91,7 @@ const THREAD_CHANGES_SUBSCRIPTION = gql`
 `
 
 
-const ThreadListContainer = ({}) => (
+const ThreadListContainer = (props) => (
   <Query 
     query={GET_THREADS}
     variables={{
@@ -119,9 +111,9 @@ const ThreadListContainer = ({}) => (
           {votePostMutation => (
 
             <ThreadList 
-              threads={posts} 
-              CommentLink={CommentLink}
-              NewThreadLink={NewThreadLink}
+              threads={posts}
+              onNavigateComments={(threadId) => props.navigation.navigate('Thread', { id: threadId })}
+              onNavigateNewThread={() => props.navigation.navigate('NewThread')}
               onPostVoting={(postId, score) => votePostMutation({variables: {id: postId, score: score}})}
               onLoadMore={() => {
                 return fetchMore({

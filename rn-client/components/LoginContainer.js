@@ -4,7 +4,6 @@ import gql from 'graphql-tag'
 import { Text, View, Button, TextInput, StyleSheet } from 'react-native'
 import Login from './Login'
 import { auth } from '../apollo_client'
-import { Redirect } from 'react-router-native'
 
 
 const SIGNUP_MUTATION = gql`
@@ -32,11 +31,6 @@ export default class LoginContainer extends React.Component {
   }
 
   render() {
-    const { redirectToReferrer } = this.state
-
-    if (redirectToReferrer === true)
-      return <Redirect to="/" />
-
     return (
       <Mutation 
         mutation={SIGNUP_MUTATION}
@@ -63,7 +57,7 @@ export default class LoginContainer extends React.Component {
     let token = data.login ? data.login.token : data.signup.token
 
     auth.setTokenAsync(token).then(() => {
-      this.setState({ redirectToReferrer: true })
+      this.props.navigation.navigate('App')
     })
   }
   

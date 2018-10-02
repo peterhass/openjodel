@@ -10,7 +10,7 @@ export default class Thread extends React.Component {
     const { thread, posts, onPostVoting, onCreatePost, onLoadMore } = this.props
 
     return (
-      <View>
+      <View style={{ width: '100%', height: '100%' }}>
         <FlatList
           data={posts}
           renderItem={this.rowRenderer.bind(this)}

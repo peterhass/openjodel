@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, FlatList } from 'react-native'
+import { View, Text, FlatList, TouchableHighlight } from 'react-native'
 import Post from './Post'
 
 export default class ThreadList extends React.Component {
@@ -14,16 +14,14 @@ export default class ThreadList extends React.Component {
   }
 
   render() {
-    const { NewThreadLink } = this.props
-    //const { threads, isLoading } = this.props
-    const { threads } = this.props
+    const { threads, onNavigateNewThread } = this.props
     const { isLoading } = this.state
 
     return (
-      <View>
-        <NewThreadLink>
+      <View style={{ width: '100%', height: '100%' }}>
+        <TouchableHighlight onPress={onNavigateNewThread}>
           <Text>+</Text>
-        </NewThreadLink>
+        </TouchableHighlight>
         <FlatList
           data={threads}
           renderItem={this.rowRenderer.bind(this)}
@@ -38,7 +36,7 @@ export default class ThreadList extends React.Component {
   }
 
   rowRenderer({item: thread}) {
-    const { onPostVoting, CommentLink } = this.props
+    const { onPostVoting, onNavigateComments } = this.props
 
     return (
       <Post
@@ -47,7 +45,7 @@ export default class ThreadList extends React.Component {
         onUpvote={() => onPostVoting(thread.id, 1)}
         onDownvote={() => onPostVoting(thread.id, -1)}
         onResetVote={() => onPostVoting(thread.id, 0)}
-        CommentLink={CommentLink}
+        onNavigateComments={onNavigateComments}
       />
     )
   }
