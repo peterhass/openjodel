@@ -11,6 +11,9 @@ export default class NewPost extends React.Component {
   constructor() {
     super()
     this.state = { message: '' }
+
+    this.inputRef = React.createRef()
+    this.onSend = this.onSend.bind(this)
   }
 
 
@@ -20,6 +23,7 @@ export default class NewPost extends React.Component {
 
     return (<View style={styles.box}>
       <TextInput
+        ref={this.inputRef}
         placeholder="What do you want to tell the world?"
         onChangeText={(message) => this.setState({message})}
         value={message}
@@ -29,12 +33,23 @@ export default class NewPost extends React.Component {
       <View style={styles.buttonBox}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => onCreatePost({message})}
+          onPress={this.onSend}
         >
           <Ionicons name="md-arrow-dropright-circle" size={32} color="green" />
         </TouchableOpacity>
       </View>
     </View>)
+  }
+
+  onSend() {
+    const { message } = this.state
+    
+    return this.props.onCreatePost({ message }).then(() => {
+      this.setState({ message: '' }, () => {
+        this.inputRef.current.blur()
+      })
+    })
+
   }
 }
 

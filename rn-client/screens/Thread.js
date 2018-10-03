@@ -14,6 +14,10 @@ import NewPost from '../components/NewPost'
 export default class Thread extends React.Component {
   constructor() {
     super()
+
+    this.listRef = React.createRef()
+    this.onNewPost = this.onNewPost.bind(this)
+    this.onListItemsChanged = this.onListItemsChanged.bind(this)
   }
 
   render() {
@@ -24,6 +28,7 @@ export default class Thread extends React.Component {
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <View style={styles.listContainer}>
           <FlatList
+            ref={this.listRef}
             style={styles.list}
             data={posts}
             renderItem={this.rowRenderer.bind(this)}
@@ -31,10 +36,12 @@ export default class Thread extends React.Component {
             onEndReached={this.loadMoreRows.bind(this)}
 
             ListHeaderComponent={this.threadPostRenderer(thread)}
+
+            onViewableItemsChanged={this.onListItemsChanged}
           />
         </View>
         <View style={styles.newPostContainer}>
-          <NewPost onCreatePost={onCreatePost} />
+          <NewPost onCreatePost={this.onNewPost} />
         </View>
       </KeyboardAvoidingView>
     )
@@ -69,6 +76,21 @@ export default class Thread extends React.Component {
 
   loadMoreRows() {
     this.props.onLoadMore()
+  }
+
+  onListItemsChanged({viewableItems}) {
+    if (!this.listScrollToLast)
+      return
+
+    this.listScrollToLast = false
+    setTimeout(() => this.listRef.current.scrollToEnd())
+    // TODO: find a proper way to implement this. since the list is paginated, it's hard to tell where the end really is
+  }
+
+  onNewPost(...args) {
+    return this.props.onCreatePost(...args).then(() => {
+      this.listScrollToLast = true
+    })
   }
 }
 
