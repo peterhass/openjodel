@@ -1,28 +1,42 @@
 import React from 'react'
-import { View, Text, FlatList, Button, StyleSheet } from 'react-native'
+import { 
+  View, 
+  ScrollView,
+  Text, 
+  FlatList, 
+  Button, 
+  KeyboardAvoidingView,
+  StyleSheet } from 'react-native'
 import Moment from 'react-moment'
 import Post from '../components/Post'
 import NewPost from '../components/NewPost'
 
 export default class Thread extends React.Component {
+  constructor() {
+    super()
+  }
+
   render() {
 
     const { thread, posts, onPostVoting, onCreatePost, onLoadMore } = this.props
 
     return (
-      <View style={{ width: '100%', height: '100%' }}>
-        <FlatList
-          data={posts}
-          renderItem={this.rowRenderer.bind(this)}
-          keyExtractor={post => post.id}
-          onEndReached={this.loadMoreRows.bind(this)}
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <View style={styles.listContainer}>
+          <FlatList
+            style={styles.list}
+            data={posts}
+            renderItem={this.rowRenderer.bind(this)}
+            keyExtractor={post => post.id}
+            onEndReached={this.loadMoreRows.bind(this)}
 
-          ListHeaderComponent={this.threadPostRenderer(thread)}
-        />
-        <NewPost
-          onCreatePost={onCreatePost}
-        />
-      </View>
+            ListHeaderComponent={this.threadPostRenderer(thread)}
+          />
+        </View>
+        <View style={styles.newPostContainer}>
+          <NewPost onCreatePost={onCreatePost} />
+        </View>
+      </KeyboardAvoidingView>
     )
   }
 
@@ -57,3 +71,20 @@ export default class Thread extends React.Component {
     this.props.onLoadMore()
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    height: '100%',
+    flex: 1,
+  },
+
+  listContainer: {
+    flex: 1
+  },
+
+  newPostContainer: {
+    flex: 0,
+    minHeight: 64,
+    maxHeight: 128
+  }
+})
