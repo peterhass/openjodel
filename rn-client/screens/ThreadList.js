@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, Text, FlatList, TouchableHighlight } from 'react-native'
+import { View, Text, FlatList, TouchableHighlight, StyleSheet } from 'react-native'
 import Post from '../components/Post'
+import { Ionicons } from '@expo/vector-icons'
 
 export default class ThreadList extends React.Component {
   constructor() {
@@ -19,9 +20,6 @@ export default class ThreadList extends React.Component {
 
     return (
       <View style={{ width: '100%', height: '100%' }}>
-        <TouchableHighlight onPress={onNavigateNewThread}>
-          <Text>+</Text>
-        </TouchableHighlight>
         <FlatList
           data={threads}
           renderItem={this.rowRenderer.bind(this)}
@@ -31,6 +29,11 @@ export default class ThreadList extends React.Component {
 
           ItemSeparatorComponent={() => (<View style={{ height: 10, backgroundColor: 'white' }} />)}
         />
+        <View style={styles.floatingActionContainer} pointerEvents="box-none">
+          <TouchableHighlight onPress={onNavigateNewThread}>
+            <Ionicons name="md-add-circle" size={64} color="black" />
+          </TouchableHighlight>
+        </View>
       </View>
     )
   }
@@ -63,3 +66,16 @@ export default class ThreadList extends React.Component {
     })
   }
 }
+
+
+const styles = StyleSheet.create({
+  floatingActionContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    opacity: 0.6
+  }
+})
