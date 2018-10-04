@@ -44,7 +44,7 @@ export default class Post extends React.Component {
             </View>
             <View style={styles.votingBox}>
               <Button color={currentVote == 1 ? 'red' : 'white'} title="↑" onPress={currentVote == 1 ? onResetVote : onUpvote} />
-              <Text style={[styles.boxText, styles.voting]}>{ votingScore }</Text>
+              <Text style={[styles.boxText, styles.voting]}>{ votingScore ? votingScore : 0 }</Text>
               <Button color={currentVote == -1 ? 'red' : 'white'} title="↓" onPress={currentVote == -1 ? onResetVote : onDownvote} />
             </View>
           </View>

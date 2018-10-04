@@ -20,6 +20,10 @@ export default class Thread extends React.Component {
     this.onListItemsChanged = this.onListItemsChanged.bind(this)
   }
 
+  componentDidMount() {
+    this.props.subscribeToPostChanges()
+  }
+
   render() {
 
     const { thread, posts, onPostVoting, onCreatePost, onLoadMore } = this.props

@@ -149,6 +149,7 @@ const ThreadContainer = ({navigation}) => (
 
                       const subscriptionPost = subscriptionData.data.threadPostChanges
 
+
                       return _.merge({}, prev, {
                         thread: {
                           children: {
