@@ -2,6 +2,7 @@
 
 [Jodel](https://www.jodel-app.com/) clone based on Elixir, Phoenix, React and GraphQL. Kind of a tech demo to show performance benifits from using elixir with phoenix.
 
+**Important note: 💣 Definitively not stable 💣**
 
 ## Differences to Jodel
 
@@ -11,22 +12,18 @@
 
 
 
-# Phoenix
+# Server
 To start your Phoenix server:
 
+  * Navigate to `Server/`
   * Install dependencies with `mix deps.get`
   * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  * Install Node.js dependencies with `cd assets && npm install`
   * Start Phoenix endpoint with `mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+# Client
+To start Expo:
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+  * Navigate to `rn_client/`
+  * Install dependencies with `yarn`
+  * Start expo using `npm start`
 
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
