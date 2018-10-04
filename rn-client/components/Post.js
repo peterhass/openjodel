@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, FlatList, Button, StyleSheet, TouchableHighlight, TouchableOpacity } from 'react-native'
 import Moment from 'react-moment'
+import { Ionicons } from '@expo/vector-icons'
 
 class LinkBox extends React.Component {
   render() {
@@ -46,9 +47,22 @@ export default class Post extends React.Component {
               <Text style={[styles.boxText, styles.messageText]}>{ message }</Text>
             </View>
             <View style={styles.votingBox}>
-              <Button color={currentVote == 1 ? 'red' : 'white'} title="↑" onPress={currentVote == 1 ? onResetVote : onUpvote} />
+              <TouchableHighlight 
+                onPress={currentVote == 1 ? onResetVote : onUpvote}
+              >
+                <Ionicons name="md-arrow-up" size={20} color={currentVote == 1 ? 'red' : 'white'} />
+              </TouchableHighlight>
+
               <Text style={[styles.boxText, styles.voting]}>{ votingScore ? votingScore : 0 }</Text>
-              <Button color={currentVote == -1 ? 'red' : 'white'} title="↓" onPress={currentVote == -1 ? onResetVote : onDownvote} />
+              <TouchableHighlight 
+                onPress={currentVote == -1 ? onResetVote : onDownvote}
+              >
+                <Ionicons name="md-arrow-down" size={20} color={currentVote == -1 ? 'red' : 'white'} />
+              </TouchableHighlight>
+
+
+
+
             </View>
           </View>
           { onNavigateComments && 
@@ -103,10 +117,14 @@ const styles = StyleSheet.create({
   
   votingBox: {
     width: '10%',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
 
   voting: {
-    textAlign: 'center'
+    textAlign: 'center',
+    marginVertical: 10
   }
 
 })
