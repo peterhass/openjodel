@@ -17,6 +17,8 @@ mutation CreateThread($message: String) {
 `
 
 class NewThreadContainer extends Component {
+  static navigationOptions = NewThread.navigationOptions
+  
   render() {
     return (
       <Mutation 
@@ -29,6 +31,7 @@ class NewThreadContainer extends Component {
         {mutation => (
           <NewThread
             onCreateThread={(threadAttrs) => mutation({variables: threadAttrs})}
+            navigation={this.props.navigation}
           />
         )}
       </Mutation>
