@@ -24,6 +24,10 @@ const FIND_THREAD = gql`
          votingScore
          currentUserVotingScore
          insertedAt
+
+         participant {
+           name
+         }
        }
     }
   }
@@ -54,6 +58,10 @@ subscription onPostChanged($threadId: ID) {
     parentId
     insertedAt
     currentUserVotingScore
+
+    participant {
+      name
+    }
   }
 }
 `
@@ -67,6 +75,10 @@ subscription onPostAdded($threadId: ID) {
     parentId
     insertedAt
     currentUserVotingScore
+
+    participant {
+      name
+    }
   }
 }
 `

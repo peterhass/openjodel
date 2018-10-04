@@ -35,6 +35,9 @@ export default class Post extends React.Component {
       <LinkBox id={id} onNavigateComments={onNavigateComments}>
         <View style={styles.box}>
           <View style={[styles.header]}>
+            { participantName &&
+              <Text style={[styles.headerItemContainer, styles.headerText]}>@{participantName}</Text>
+            }
             <Moment fromNow element={Text} style={[styles.boxText, styles.headerText]}>{ insertedAt }</Moment>         
           </View>
 
@@ -76,6 +79,12 @@ const styles = StyleSheet.create({
 
   header: {
     flex: 0,
+    flexDirection: 'row'
+  },
+
+  headerItemContainer: {
+    marginRight: 10,
+    fontWeight: 'bold'
   },
 
   headerText: {
