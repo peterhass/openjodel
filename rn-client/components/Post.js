@@ -48,6 +48,7 @@ export default class Post extends React.Component {
             </View>
             <View style={styles.votingBox}>
               <TouchableHighlight 
+                style={styles.votingButton}
                 onPress={currentVote == 1 ? onResetVote : onUpvote}
               >
                 <Ionicons name="md-arrow-up" size={20} color={currentVote == 1 ? 'red' : 'white'} />
@@ -55,6 +56,7 @@ export default class Post extends React.Component {
 
               <Text style={[styles.boxText, styles.voting]}>{ votingScore ? votingScore : 0 }</Text>
               <TouchableHighlight 
+                style={styles.votingButton}
                 onPress={currentVote == -1 ? onResetVote : onDownvote}
               >
                 <Ionicons name="md-arrow-down" size={20} color={currentVote == -1 ? 'red' : 'white'} />
@@ -106,20 +108,27 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
 
   messageBox: {
     marginTop: 10,
-    width: '90%'
+    width: '85%'
   },
 
   
   votingBox: {
-    width: '10%',
+    width: '15%',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'stretch'
+  },
+
+  votingButton: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center'
+
   },
 
   voting: {
