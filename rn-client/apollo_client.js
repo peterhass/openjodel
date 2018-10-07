@@ -10,13 +10,14 @@ import {Socket as PhoenixSocket} from './phoenix-lib.js'
 import * as AbsintheSocket from '@absinthe/socket'
 import { createAbsintheSocketLink } from '@absinthe/socket-apollo-link'
 import { SecureStore } from 'expo'
+import { BACKEND_HOST } from 'react-native-dotenv'
 
 const HttpEndpoint = {
-  uri: "http://10.0.0.42:4000/api/graphql"
+  uri: `http://${BACKEND_HOST}/api/graphql`
 }
 
 const SocketEndpoint = {
-  uri: "ws://10.0.0.42:4000/socket"
+  uri: `ws://${BACKEND_HOST}/socket`
 }
 
 class Auth {

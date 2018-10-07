@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "babel-preset-es2015-node6": "^0.4.0",
-    "babel-preset-stage-0": "^6.24.1"
+    "babel-preset-stage-0": "^6.24.1",
+    "react-native-dotenv": "^0.2.0"
   }
 }
