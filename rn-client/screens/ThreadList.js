@@ -45,9 +45,9 @@ export default class ThreadList extends React.Component {
       <Post
         { ...thread }
         children={thread.children.posts || []}
-        onUpvote={() => onPostVoting(thread.id, 1)}
-        onDownvote={() => onPostVoting(thread.id, -1)}
-        onResetVote={() => onPostVoting(thread.id, 0)}
+        onUpvote={() => onPostVoting({ post: thread }, 1)}
+        onDownvote={() => onPostVoting({ post: thread }, -1)}
+        onResetVote={() => onPostVoting({ post: thread }, 0)}
         onNavigateComments={onNavigateComments}
       />
     )

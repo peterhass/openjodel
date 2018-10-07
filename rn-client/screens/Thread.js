@@ -58,9 +58,9 @@ export default class Thread extends React.Component {
       <View style={{marginBottom: 5}}>
         <Post
         { ...thread }
-        onUpvote={() => onPostVoting(thread.id, 1)}
-        onDownvote={() => onPostVoting(thread.id, -1)}
-        onResetVote={() => onPostVoting(thread.id, 0)}
+        onUpvote={() => onPostVoting({ post: thread }, 1)}
+        onDownvote={() => onPostVoting({ post: thread }, -1)}
+        onResetVote={() => onPostVoting({ post: thread }, 0)}
       />
     </View>)
   }
@@ -70,11 +70,9 @@ export default class Thread extends React.Component {
     
     return (<Post
       {...post}
-      onUpvote={() => onPostVoting(post.id, 1)}
-      onDownvote={() => onPostVoting(post.id, -1)}
-      onResetVote={() => onPostVoting(post.id, 0)}
-
-
+      onUpvote={() => onPostVoting({ post }, 1)}
+      onDownvote={() => onPostVoting({ post }, -1)}
+      onResetVote={() => onPostVoting({ post }, 0)}
     />)
   }
 

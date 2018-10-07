@@ -3,6 +3,7 @@ import ThreadList from './ThreadList'
 import gql from 'graphql-tag'
 import { Query, Mutation } from 'react-apollo'
 import _ from 'lodash'
+import { votePostMutation } from './ThreadContainer'
 
 
 const GET_THREADS = gql`
@@ -108,13 +109,13 @@ const ThreadListContainer = (props) => (
 
       return (
        <Mutation mutation={VOTE_POST_MUTATION}>
-          {votePostMutation => (
+          {votingMutation => (
 
             <ThreadList 
               threads={posts}
               onNavigateComments={(threadId) => props.navigation.navigate('Thread', { id: threadId })}
               onNavigateNewThread={() => props.navigation.navigate('NewThread')}
-              onPostVoting={(postId, score) => votePostMutation({variables: {id: postId, score: score}})}
+              onPostVoting={(...args) => votePostMutation(votingMutation, ...args)}
               onLoadMore={() => {
                 return fetchMore({
                   query: GET_THREADS,

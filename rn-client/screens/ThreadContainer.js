@@ -100,6 +100,26 @@ mutation CreatePost($message: String, $parentId: ID) {
 }
 `
 
+const votePostMutation = (mutation, { post }, newUserVotingScore) => (
+  mutation({
+    variables: { id: post.id, score: newUserVotingScore },
+    optimisticResponse: {
+      __typename: "Mutation",
+      votePost: {
+        __typename: "Post",
+        id: post.id,
+        currentUserVotingScore: newUserVotingScore,
+        votingScore: post.votingScore - post.currentUserVotingScore + newUserVotingScore,
+        message: post.message,
+        insertedAt: post.insertedAt
+      }
+    }
+  })
+)
+
+// TODO: extract some other way
+export { votePostMutation }
+
 const ThreadContainer = ({navigation}) => (
   <Query
     query={FIND_THREAD}
@@ -125,7 +145,7 @@ const ThreadContainer = ({navigation}) => (
               <Thread
                 thread={data.thread}
                 posts={data.thread.children.posts}
-                onPostVoting={(postId, score) => mutation({variables: {id: postId, score: score}})}
+                onPostVoting={(...args) => votePostMutation(mutation, ...args)}
                 onCreatePost={({message}) => createPostMutation({variables: {message, parentId: data.thread.id}})}
                 onLoadMore={() => {
                   return fetchMore({
