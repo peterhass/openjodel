@@ -21,6 +21,8 @@ defmodule Openjodel.Processes.Thread do
         {:error, _} = error -> error 
       end
 
+      # TODO: handle post image
+      # TODO: rollback everything if there is a problem with the image
     end
 
     result
@@ -28,14 +30,23 @@ defmodule Openjodel.Processes.Thread do
 
   def add_post(%User{} = user, %{parent_id: thread_id} = post_attrs) do
     ensure_participant_exists(user.id, thread_id)
-    
+
+    IO.inspect("post attrs")
+    IO.inspect(post_attrs)
+
     {:ok, result} = Repo.transaction fn ->
       participant = Repo.get_by!(Participant, user_id: user.id, post_id: thread_id)
 
-      %Post{participant_id: participant.id}
+      {:ok, post} = %Post{participant_id: participant.id, has_image: !!post_attrs.image}
       |> Post.post_to_insert_now 
       |> Post.post_changeset(post_attrs)
       |> Repo.insert
+
+      # TODO: handle post image
+      # TODO: rollback everything if there is a problem with the image
+      Openjodel.PostImageUpload.store(post, post_attrs.image.path)
+
+      {:ok, post}
     end
 
     result

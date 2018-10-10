@@ -11,6 +11,7 @@ import * as AbsintheSocket from '@absinthe/socket'
 import { createAbsintheSocketLink } from '@absinthe/socket-apollo-link'
 import { SecureStore } from 'expo'
 import { BACKEND_HOST } from 'react-native-dotenv'
+import { createLink as createHttpLink } from 'apollo-absinthe-upload-link'
 
 const HttpEndpoint = {
   uri: `http://${BACKEND_HOST}/api/graphql`
@@ -89,7 +90,7 @@ const buildClient = () => {
           new PhoenixSocket(SocketEndpoint.uri, { params: { token } })
         )),
 
-        new HttpLink({
+        createHttpLink({
           uri: HttpEndpoint.uri 
         })
 

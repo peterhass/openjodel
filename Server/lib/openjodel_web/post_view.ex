@@ -1,7 +1,15 @@
 defmodule OpenjodelWeb.PostView do
   alias Openjodel.{Post, User}
 
-  defstruct [:id, :inserted_at, :message, :parent_id, :participant, :voting_score, :current_user_voting_score]
+  defstruct [:id, 
+             :inserted_at, 
+             :message, 
+             :parent_id, 
+             :participant, 
+             :voting_score, 
+             :current_user_voting_score,
+             :image_url 
+  ]
 
   def from_posts(posts, %User{} = user \\ nil) when is_list(posts) do
     posts |> Enum.map(&(from_post(&1, user)))
@@ -18,8 +26,18 @@ defmodule OpenjodelWeb.PostView do
       message: post.message, 
       participant: post.participant, 
       parent_id: post.parent_id, 
-      voting_score: calculate_voting_score(votings)
+      voting_score: calculate_voting_score(votings),
+      image_url: image_public_url(post.id, post.has_image)
     }
+  end
+
+  defp image_public_url(id, false) do
+    nil
+  end
+
+  defp image_public_url(id, true) do
+    # TODO: clean up this horrible mess (Openjodel referencing OpenjodelWeb? Wtf?)
+    "#{OpenjodelWeb.Endpoint.url}#{OpenjodelWeb.Endpoint.static_path("/uploads/posts/#{id}-image.jpg")}"
   end
 
   defp user_voting_score(votings, user_id) do

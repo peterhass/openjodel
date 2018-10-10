@@ -2,6 +2,7 @@ defmodule OpenjodelWeb.Schema do
   use Absinthe.Schema
 
   import_types Absinthe.Type.Custom
+  import_types Absinthe.Plug.Types
   import_types OpenjodelWeb.Schema.ContentTypes
 
   alias OpenjodelWeb.Resolvers
@@ -92,7 +93,8 @@ defmodule OpenjodelWeb.Schema do
     end
 
     field :create_post, :post do
-      arg :message, non_null(:string)
+      arg :message, :string
+      arg :image, :upload
       arg :parent_id, non_null(:id)
 
       resolve &Resolvers.Content.create_post/3

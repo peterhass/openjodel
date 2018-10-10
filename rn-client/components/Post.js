@@ -1,20 +1,33 @@
 import React from 'react'
-import { View, Text, FlatList, Button, StyleSheet, TouchableHighlight, TouchableOpacity } from 'react-native'
+import { View, 
+  Text, 
+  Modal,
+  FlatList, 
+  Button, 
+  StyleSheet, 
+  ImageBackground,
+  Image,
+  TouchableHighlight, 
+  TouchableOpacity } from 'react-native'
 import Moment from 'react-moment'
 import { Ionicons } from '@expo/vector-icons'
 
-class LinkBox extends React.Component {
-  render() {
-    const { onNavigateComments, id, children } = this.props
+const PostBackground = ({ imageUrl, children, ...props }) => {
+  if (imageUrl)
+    return (<ImageBackground 
+      blurRadius={20}
+      source={{uri: imageUrl }} 
+      {...props}>{children}</ImageBackground>)
 
-    if (onNavigateComments && id)
-      return (<TouchableHighlight onPress={() => onNavigateComments(id)}>{children}</TouchableHighlight>)
-
-    return (<View>{children}</View>)
-  }
+  return (<View {...props}>{children}</View>)
 }
 
 export default class Post extends React.Component {
+  constructor() {
+    super()
+    this.state = { showImageModal: false }
+  }
+  
   render() {
     const {
       message,
@@ -22,6 +35,7 @@ export default class Post extends React.Component {
       votingScore,
       currentUserVotingScore: currentVote,
       participant,
+      imageUrl,
       id,
       children,
       onResetVote,
@@ -30,50 +44,83 @@ export default class Post extends React.Component {
       onNavigateComments
     } = this.props
 
+    const {
+      showImageModal
+    } = this.state
+
     const { name: participantName } = participant || {}
 
+    // TODO: time to clean up this mess
+
+    let onPress = () => {}
+    if (onNavigateComments && id)
+      onPress = () => onNavigateComments(id)
+
+    let onLongPress = () => {}
+    if (imageUrl)
+      onLongPress = () => {
+        this.setState({ showImageModal: true })
+      } 
+
     return (
-      <LinkBox id={id} onNavigateComments={onNavigateComments}>
-        <View style={styles.box}>
-          <View style={[styles.header]}>
-            { participantName &&
-              <Text style={[styles.headerItemContainer, styles.headerText]}>@{participantName}</Text>
-            }
-            <Moment fromNow element={Text} style={[styles.boxText, styles.headerText]}>{ insertedAt }</Moment>         
-          </View>
-
-          <View style={styles.body}>
-            <View style={styles.messageBox}>
-              <Text style={[styles.boxText, styles.messageText]}>{ message }</Text>
-            </View>
-            <View style={styles.votingBox}>
-              <TouchableHighlight 
-                style={styles.votingButton}
-                onPress={currentVote == 1 ? onResetVote : onUpvote}
-              >
-                <Ionicons name="md-arrow-up" size={20} color={currentVote == 1 ? 'red' : 'white'} />
-              </TouchableHighlight>
-
-              <Text style={[styles.boxText, styles.voting]}>{ votingScore ? votingScore : 0 }</Text>
-              <TouchableHighlight 
-                style={styles.votingButton}
-                onPress={currentVote == -1 ? onResetVote : onDownvote}
-              >
-                <Ionicons name="md-arrow-down" size={20} color={currentVote == -1 ? 'red' : 'white'} />
-              </TouchableHighlight>
-
-
-
-
-            </View>
-          </View>
-          { onNavigateComments && 
-            <View style={styles.footer}>
-              <Text style={[styles.boxText]}>Ϡ { children.length }</Text>
-            </View>
+      <TouchableHighlight onPress={onPress} onLongPress={onLongPress}>
+        <View>
+          { imageUrl &&
+              <Modal 
+                transparent={false}
+                visible={showImageModal}
+                style={styles.modalImageContainer}
+             >
+               <TouchableOpacity
+                 onPress={() => this.setState({ showImageModal: false })}
+                 style={{flex: 1}}
+               >
+                <Image source={{uri: imageUrl}} style={styles.modalImage}/>
+              </TouchableOpacity>
+            </Modal>
           }
+
+          <PostBackground imageUrl={imageUrl} style={styles.box}>
+            <View style={[styles.header]}>
+              { participantName &&
+                <Text style={[styles.headerItemContainer, styles.headerText]}>@{participantName}</Text>
+              }
+              <Moment fromNow element={Text} style={[styles.boxText, styles.headerText]}>{ insertedAt }</Moment>         
+            </View>
+
+            <View style={styles.body}>
+              <View style={styles.messageBox}>
+                <Text style={[styles.boxText, styles.messageText]}>{ message }</Text>
+              </View>
+              <View style={styles.votingBox}>
+                <TouchableHighlight 
+                  style={styles.votingButton}
+                  onPress={currentVote == 1 ? onResetVote : onUpvote}
+                >
+                  <Ionicons name="md-arrow-up" size={20} color={currentVote == 1 ? 'red' : 'white'} />
+                </TouchableHighlight>
+
+                <Text style={[styles.boxText, styles.voting]}>{ votingScore ? votingScore : 0 }</Text>
+                <TouchableHighlight 
+                  style={styles.votingButton}
+                  onPress={currentVote == -1 ? onResetVote : onDownvote}
+                >
+                  <Ionicons name="md-arrow-down" size={20} color={currentVote == -1 ? 'red' : 'white'} />
+                </TouchableHighlight>
+
+
+
+
+              </View>
+            </View>
+            { onNavigateComments && 
+              <View style={styles.footer}>
+                <Text style={[styles.boxText]}>Ϡ { children.length }</Text>
+              </View>
+            }
+          </PostBackground>
         </View>
-      </LinkBox>
+      </TouchableHighlight>
     )
   }
 
@@ -81,6 +128,14 @@ export default class Post extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  modalImageContainer: {
+  },
+
+  modalImage: {
+    flex: 1,
+    resizeMode: 'stretch'
+  },
+  
   boxText: {
     color: 'white'
   },

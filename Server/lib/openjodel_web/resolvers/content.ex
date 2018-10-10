@@ -27,7 +27,7 @@ defmodule OpenjodelWeb.Resolvers.Content do
     Processes.Thread.add_post(current_user, post_attrs)
     |> case do
       {:ok, post} -> {:ok, post}
-      {:error, _} -> throw("Unable to create post (TODO: add proper error handling)")
+      {:error, e} -> throw(e)
     end
   end
 

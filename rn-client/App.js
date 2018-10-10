@@ -11,7 +11,7 @@ import ThreadContainer from './screens/ThreadContainer'
 const AppStack = createStackNavigator({
   Home: ThreadListContainer,
   NewThread: NewThreadContainer,
-  Thread: ThreadContainer
+  Thread: ThreadContainer,
 })
 
 const AuthStack = createStackNavigator({

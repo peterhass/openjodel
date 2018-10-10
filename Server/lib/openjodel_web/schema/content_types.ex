@@ -13,6 +13,7 @@ defmodule OpenjodelWeb.Schema.ContentTypes do
     field :message, :string
     field :inserted_at, :datetime
     field :voting_score, :integer
+    field :image_url, :string
     field :current_user_voting_score, :integer
     field :participant, :participant
     # TODO: think about performance

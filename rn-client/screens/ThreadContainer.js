@@ -13,6 +13,7 @@ const FIND_THREAD = gql`
      votingScore
      currentUserVotingScore
      parentId
+     imageUrl
      children(cursor: $cursor) {
        cursor {
          before
@@ -21,6 +22,7 @@ const FIND_THREAD = gql`
        posts {
          id
          message
+         imageUrl
          votingScore
          currentUserVotingScore
          insertedAt
@@ -58,6 +60,7 @@ subscription onPostChanged($threadId: ID) {
     parentId
     insertedAt
     currentUserVotingScore
+    imageUrl
 
     participant {
       name
@@ -75,6 +78,7 @@ subscription onPostAdded($threadId: ID) {
     parentId
     insertedAt
     currentUserVotingScore
+    imageUrl
 
     participant {
       name
@@ -84,14 +88,15 @@ subscription onPostAdded($threadId: ID) {
 `
 
 const CREATE_POST_MUTATION = gql`
-mutation CreatePost($message: String, $parentId: ID) {
-  createPost(message: $message, parentId: $parentId) {
+mutation CreatePost($message: String, $parentId: ID, $image: Upload) {
+  createPost(message: $message, parentId: $parentId, image: $image) {
     id
     message
     votingScore
     parentId
     insertedAt
     currentUserVotingScore
+    imageUrl
 
     participant {
       name
@@ -146,7 +151,7 @@ const ThreadContainer = ({navigation}) => (
                 thread={data.thread}
                 posts={data.thread.children.posts}
                 onPostVoting={(...args) => votePostMutation(mutation, ...args)}
-                onCreatePost={({message}) => createPostMutation({variables: {message, parentId: data.thread.id}})}
+                onCreatePost={({message, image}) => createPostMutation({variables: {message, image, parentId: data.thread.id, hasImage: !!image}})}
                 onLoadMore={() => {
                   return fetchMore({
                     query: FIND_THREAD,

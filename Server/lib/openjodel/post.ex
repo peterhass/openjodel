@@ -6,6 +6,7 @@ defmodule Openjodel.Post do
   schema "posts" do
     field :message, :string
     field :inserted_at, :utc_datetime
+    field :has_image, :boolean
 
     has_many :children, Post, foreign_key: :parent_id
     belongs_to :parent, Post
@@ -20,25 +21,37 @@ defmodule Openjodel.Post do
 
   def changeset(%Post{} = post, attrs) do
     post 
-    |> cast(attrs, [:message, :inserted_at, :parent_id])
+    |> cast(attrs, [:has_image, :message, :inserted_at, :parent_id])
     |> foreign_key_constraint(:parent_id)
     |> foreign_key_constraint(:participant_id)
-    |> validate_required([:message, :inserted_at])
+    |> validate_message_or_post
+    |> validate_required([:inserted_at])
   end
 
 
   def post_changeset(%Post{} = post, attrs) do
     post 
-    |> cast(attrs, [:message, :inserted_at, :parent_id])
+    |> cast(attrs, [:has_image, :message, :inserted_at, :parent_id])
     |> foreign_key_constraint(:parent_id)
     |> foreign_key_constraint(:participant_id)
-    |> validate_required([:message, :inserted_at, :participant_id, :parent_id])
+    |> validate_message_or_post
+    |> validate_required([:inserted_at, :participant_id, :parent_id])
   end
 
   def thread_changeset(%Post{} = post, attrs) do
     post
-    |> cast(attrs, [:message, :inserted_at])
-    |> validate_required([:message])
+    |> cast(attrs, [:has_image, :message, :inserted_at])
+    |> validate_message_or_post
+  end
+
+  defp validate_message_or_post(changeset) do
+    if get_field(changeset, :has_image) do
+      changeset
+      |> validate_inclusion(:has_image, [true])
+    else
+      changeset
+      |> validate_required(:message)
+    end
   end
 
   def post_to_insert_now(%Post{} = post \\ %Post{}) do
