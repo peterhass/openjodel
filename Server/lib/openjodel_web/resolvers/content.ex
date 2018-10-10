@@ -1,39 +1,9 @@
 defmodule OpenjodelWeb.Resolvers.Content do
   alias Openjodel.{Repo, Post, Voting, User, PaginatedPosts}
   alias Openjodel.Processes
-  alias __MODULE__.PostWithVotingScore
+  alias OpenjodelWeb.PostView
   import Ecto.Query
 
-  defmodule PostWithVotingScore do
-    defstruct [:id, :inserted_at, :message, :parent_id, :participant, :voting_score, :current_user_voting_score]
-
-    def from_posts(posts, %User{} = user \\ nil) when is_list(posts) do
-      posts |> Enum.map(&(from_post(&1, user)))
-    end
-    
-
-    def from_post(%Post{votings: votings} = post, %User{id: current_user_id}) when is_list(votings) do
-      %__MODULE__{from_post(post) | current_user_voting_score: user_voting_score(votings, current_user_id)}
-    end
-
-    def from_post(%Post{votings: votings} = post) when is_list(votings) do
-      %__MODULE__{id: post.id, inserted_at: post.inserted_at, message: post.message, participant: post.participant, parent_id: post.parent_id, voting_score: calculate_voting_score(votings)}
-    end
-
-    def user_voting_score(votings, user_id) do
-      votings
-      |> Enum.filter(fn voting -> voting.user_id == user_id end)
-      |> Enum.map(fn voting -> voting.score end)
-      |> Enum.at(0)
-    end
-
-    def calculate_voting_score(votings) do
-      votings 
-      |> Enum.map(fn vote -> vote.score end)
-      |> Enum.sum()
-    end
-  end
-  
   def signup(_, _, _) do
     # create new user
     user = User.with_token |> User.changeset(%{}) |> Repo.insert!()
@@ -76,21 +46,21 @@ defmodule OpenjodelWeb.Resolvers.Content do
     IO.inspect(cursor)
     IO.inspect(metadata)
               
-    threads_with_voting_scores = PostWithVotingScore.from_posts(threads, current_user)
+    threads_with_voting_scores = PostView.from_posts(threads, current_user)
 
     {:ok, Openjodel.PaginatedPosts.from_pagination(threads_with_voting_scores, metadata)}
   end
 
   def find_thread(_parent, %{id: id}, %{context: %{current_user: current_user}}) do
-    {:ok, Post |> init_posts_query |> Repo.get!(id) |> PostWithVotingScore.from_post(current_user)}
+    {:ok, Post |> init_posts_query |> Repo.get!(id) |> PostView.from_post(current_user)}
   end
 
   # transform resource (from subscription trigger) for current user
   def resource_for_user(%Post{id: id}, _, %{context: %{current_user: current_user}}) do
-    {:ok, Post |> init_posts_query |> Repo.get!(id) |> PostWithVotingScore.from_post(current_user)}
+    {:ok, Post |> init_posts_query |> Repo.get!(id) |> PostView.from_post(current_user)}
   end
 
-  def resource_for_user(%PostWithVotingScore{id: id}, args, context) do
+  def resource_for_user(%PostView{id: id}, args, context) do
     resource_for_user(%Post{id: id}, args, context)
   end
 
@@ -109,7 +79,7 @@ defmodule OpenjodelWeb.Resolvers.Content do
     IO.inspect("list_thread_posts")
     IO.inspect(cursor)
 
-    posts_with_voting_scores = PostWithVotingScore.from_posts(posts, current_user)
+    posts_with_voting_scores = PostView.from_posts(posts, current_user)
 
     {:ok, Openjodel.PaginatedPosts.from_pagination(posts_with_voting_scores, metadata)}
   end
@@ -123,7 +93,7 @@ defmodule OpenjodelWeb.Resolvers.Content do
 
     {
       :ok, 
-      Post |> init_posts_query |> Repo.get!(id) |> PostWithVotingScore.from_post(current_user)
+      Post |> init_posts_query |> Repo.get!(id) |> PostView.from_post(current_user)
     }
   end
 
