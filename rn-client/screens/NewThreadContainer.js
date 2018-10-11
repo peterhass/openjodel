@@ -5,14 +5,14 @@ import { Query, Mutation } from 'react-apollo'
 import { StackActions, NavigationActions } from 'react-navigation'
 
 const CREATE_THREAD_MUTATION = gql`
-mutation CreateThread($message: String) {
-  createThread(message: $message) {
+mutation CreateThread($message: String, $image: Upload) {
+  createThread(message: $message, image: $image) {
     id
     message
     votingScore
     insertedAt
     currentUserVotingScore
-    
+    imageUrl
   }
 }
 `

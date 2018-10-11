@@ -87,7 +87,8 @@ defmodule OpenjodelWeb.Schema do
     end
 
     field :create_thread, :post do
-      arg :message, non_null(:string)
+      arg :message, :string
+      arg :image, :upload
 
       resolve &Resolvers.Content.create_thread/3
     end

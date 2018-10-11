@@ -20,6 +20,7 @@ const GET_THREADS = gql`
       votingScore
       currentUserVotingScore
       parentId
+      imageUrl
       children {
         cursor {
           before
@@ -61,6 +62,7 @@ const THREAD_ADDED_SUBSCRIPTION = gql`
       votingScore
       currentUserVotingScore
       parentId 
+      imageUrl
       children {
         cursor {
           before
@@ -86,6 +88,7 @@ const THREAD_CHANGES_SUBSCRIPTION = gql`
       insertedAt
       votingScore
       currentUserVotingScore
+      imageUrl
       parentId 
     }
   }

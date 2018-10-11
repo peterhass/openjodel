@@ -5,7 +5,7 @@ defmodule Openjodel.PostImageUpload do
   @root_dir File.cwd!
   @uploads_dir Path.join(~w(#{@root_dir} priv static uploads posts))
 
-  def store(%Post{} = post, upload_path) do
+  def store(%Post{} = post, upload_path) when is_binary(upload_path) do
     File.exists?(upload_path)
     |> case do
       false -> {:error, "Upload file does not exist"}

@@ -5,7 +5,8 @@ defmodule Openjodel.Processes.Thread do
 
   def start_thread(%User{} = user, post_attrs) do
     {:ok, result} = Repo.transaction fn ->
-      Post.post_to_insert_now 
+      %Post{has_image: !!post_attrs[:image]}
+      |> Post.post_to_insert_now 
       |> Post.thread_changeset(post_attrs)
       |> Repo.insert
       |> case do
@@ -16,6 +17,10 @@ defmodule Openjodel.Processes.Thread do
           thread = thread 
                   |> Ecto.Changeset.change(participant_id: participant.id)
                   |> Repo.update!
+
+          if post_attrs[:image] do
+            Openjodel.PostImageUpload.store(thread, post_attrs.image.path)
+          end
 
           {:ok, thread}
         {:error, _} = error -> error 
@@ -37,14 +42,16 @@ defmodule Openjodel.Processes.Thread do
     {:ok, result} = Repo.transaction fn ->
       participant = Repo.get_by!(Participant, user_id: user.id, post_id: thread_id)
 
-      {:ok, post} = %Post{participant_id: participant.id, has_image: !!post_attrs.image}
+      {:ok, post} = %Post{participant_id: participant.id, has_image: !!post_attrs[:image]}
       |> Post.post_to_insert_now 
       |> Post.post_changeset(post_attrs)
       |> Repo.insert
 
       # TODO: handle post image
       # TODO: rollback everything if there is a problem with the image
-      Openjodel.PostImageUpload.store(post, post_attrs.image.path)
+      if post_attrs[:image] do
+        Openjodel.PostImageUpload.store(post, post_attrs.image.path)
+      end
 
       {:ok, post}
     end
