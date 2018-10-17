@@ -1,7 +1,14 @@
 defmodule OpenjodelWeb.Resolvers.Content do
-  alias Openjodel.{Post, PaginatedPosts, Processes}
+  alias Openjodel.{
+    Post, 
+    PaginatedPosts, 
+    Processes
+  }
+
+  alias Openjodel.Streams.Query, as: StreamsQuery
+  alias OpenjodelWeb.Streams.Server, as: StreamsServer
+
   alias Openjodel.Processes
-  alias OpenjodelWeb.Streams
   alias OpenjodelWeb.PostView
 
   def signup(_, _, _) do
@@ -30,7 +37,7 @@ defmodule OpenjodelWeb.Resolvers.Content do
     Processes.Thread.start_thread(current_user, convert_post_attrs(post_attrs))
     |> case do
       {:ok, thread} -> 
-        Streams.Server.attach_thread(thread)
+        StreamsServer.attach_thread(thread)
         {:ok, thread}
       {:error, e} -> throw(e)
     end
@@ -45,7 +52,7 @@ defmodule OpenjodelWeb.Resolvers.Content do
   end
 
   def find_stream(_, %{id: id}, %{context: %{current_user: _current_user}}) do
-    Processes.Streams.find_stream(id)
+    StreamsQuery.find(id)
     |> case do
       nil -> {:error, "unable to find stream"}
       stream -> {:ok, stream}
@@ -104,7 +111,7 @@ defmodule OpenjodelWeb.Resolvers.Content do
     |> case do
       {:ok, _voting} = result -> 
         Processes.Thread.find_post(id)
-        |> Streams.Server.publish_post_change
+        |> StreamsServer.publish_post_change
         
         result
       {:error, _} -> throw("Unable to vote post (TODO: add proper error handling)")

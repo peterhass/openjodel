@@ -1,24 +1,26 @@
 defmodule OpenjodelWeb.Streams.Server do
   use GenServer
-  alias Openjodel.Post
   alias OpenjodelWeb.Endpoint
-  alias Openjodel.Processes
 
+  alias Openjodel.{
+    Post,
+    Streams
+  }
 
   defmodule ServerImpl do
-    def attach_thread(%Post{} = thread) do
-      Processes.Streams.add_post_to_streams(thread)
+    def attach_thread(thread) do
+      Streams.AttachPost.attach_by_location(thread)
       |> Enum.each(&Absinthe.Subscription.publish(Endpoint, thread, stream_thread_added: &1))
     end
 
-    def publish_post_change(%Post{id: id, parent_id: nil} = thread) do
+    def publish_post_change(%{id: id, parent_id: nil} = thread) do
       Absinthe.Subscription.publish(Endpoint, thread, thread_post_changes: id)
 
-      Processes.Streams.streams_containing_post(thread)
+      Streams.Query.containing_post(thread)
       |> Enum.each(&Absinthe.Subscription.publish(Endpoint, thread, stream_thread_changed: &1))
     end
 
-    def publish_post_change(%Post{parent_id: thread_id} = post) do
+    def publish_post_change(%{parent_id: thread_id} = post) do
       Absinthe.Subscription.publish(Endpoint, post, thread_post_changes: thread_id)
     end
   end
@@ -29,11 +31,11 @@ defmodule OpenjodelWeb.Streams.Server do
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
   end
 
-  def attach_thread(%Post{} = thread) do
+  def attach_thread(thread) do
     GenServer.cast(__MODULE__, {:attach_thread, thread})
   end
 
-  def publish_post_change(%Post{} = thread) do
+  def publish_post_change(thread) do
     GenServer.cast(__MODULE__, {:publish_post_change, thread})
   end
 
