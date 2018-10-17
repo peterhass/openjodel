@@ -1,7 +1,13 @@
 defmodule Openjodel.Processes.Streams do
   alias Openjodel.Repo
   alias Openjodel.Post
+  alias Openjodel.Stream
 
+  # TODO: move to some other layer
+  def find_stream(id) do
+    Stream |> Repo.get(id)
+  end
+  
   def add_post_to_streams(%Post{id: post_id}) do
     add_post_to_streams(post_id)
   end

@@ -23,6 +23,14 @@ defmodule OpenjodelWeb.Schema.ContentTypes do
     end
   end
 
+  object :stream do
+    field :id, :id
+    field :posts, :paginated_posts do
+      arg :cursor, :cursor_input
+      resolve &Resolvers.Content.list_threads/3
+    end
+  end
+
   input_object :cursor_input do
     field :before, :string
     field :after, :string

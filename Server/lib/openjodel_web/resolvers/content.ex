@@ -1,19 +1,19 @@
 defmodule OpenjodelWeb.Resolvers.Content do
-  alias Openjodel.{Repo, Post, Voting, User, PaginatedPosts, Stream, StreamPost}
+  alias Openjodel.{Post, PaginatedPosts, Processes}
   alias Openjodel.Processes
   alias OpenjodelWeb.Streams
   alias OpenjodelWeb.PostView
-  import Ecto.Query
 
   def signup(_, _, _) do
-    # create new user
-    user = User.with_token |> User.changeset(%{}) |> Repo.insert!()
-
-    {:ok, user}
+    {:ok, Processes.Users.signup}
   end
 
   def login(_, %{token: token}, _) do
-    {:ok, User |> where([u], u.token == ^token) |> Repo.one!}
+    Processes.Users.find_user_by_token(token)
+    |> case do
+      nil -> {:error, "cannot find user for token"}
+      user -> {:ok, user}
+    end
   end
 
   defp convert_post_attrs(post_attrs) do
@@ -44,40 +44,42 @@ defmodule OpenjodelWeb.Resolvers.Content do
     end
   end
 
-  def list_threads(_, arguments, %{context: %{current_user: current_user}}) do
-    cursor = arguments
+  def find_stream(_, %{id: id}, %{context: %{current_user: _current_user}}) do
+    Processes.Streams.find_stream(id)
+    |> case do
+      nil -> {:error, "unable to find stream"}
+      stream -> {:ok, stream}
+    end
+  end
+
+  def find_thread(_parent, %{id: id}, %{context: %{current_user: current_user}}) do
+    Processes.Thread.find_thread(id)
+    |> case do
+      nil -> {:error, "Unable to find thread"}
+      thread -> {:ok, PostView.from_post(thread, current_user)}
+    end
+  end
+
+  def list_threads(%{id: stream_id}, arguments, %{context: %{current_user: current_user}}) do
+    input_cursor = arguments
              |> case do
                %{cursor: cursor} -> cursor
                _ -> %{}
              end
-    stream_id = arguments
-                |> case do
-                  %{stream_id: stream_id} -> stream_id
-                  _ -> nil
-                end
 
-    %{entries: threads, metadata: metadata} = Post
-              |> init_posts_query
-              |> Post.parents
-              |> join(:inner, [p], ps in StreamPost, p.id == ps.post_id and ps.stream_id == ^stream_id)
-              |> Repo.paginate(cursor_fields: [:inserted_at, :id], sort_direction: :desc, limit: cursor[:limit] || 50, before: cursor[:before], after: cursor[:after])
+    %PaginatedPosts{posts: posts, cursor: cursor} = Processes.Thread.paginated_threads_in_stream(stream_id, input_cursor)
+    paginated_threads = %PaginatedPosts{posts: PostView.from_posts(posts, current_user), cursor: cursor}
 
-    IO.inspect("======== list_threads ===========")
-    IO.inspect(cursor)
-    IO.inspect(metadata)
-              
-    threads_with_voting_scores = PostView.from_posts(threads, current_user)
-
-    {:ok, Openjodel.PaginatedPosts.from_pagination(threads_with_voting_scores, metadata)}
-  end
-
-  def find_thread(_parent, %{id: id}, %{context: %{current_user: current_user}}) do
-    {:ok, Post |> init_posts_query |> Repo.get!(id) |> PostView.from_post(current_user)}
+    {:ok, paginated_threads}
   end
 
   # transform resource (from subscription trigger) for current user
   def resource_for_user(%Post{id: id}, _, %{context: %{current_user: current_user}}) do
-    {:ok, Post |> init_posts_query |> Repo.get!(id) |> PostView.from_post(current_user)}
+    Processes.Thread.find_post(id)
+    |> case do
+      {:ok, post} -> {:ok, PostView.from_post(post, current_user)}
+      other_result -> other_result
+    end
   end
 
   def resource_for_user(%PostView{id: id}, args, context) do
@@ -85,52 +87,32 @@ defmodule OpenjodelWeb.Resolvers.Content do
   end
 
   def list_thread_posts(%{id: thread_id}, arguments, %{context: %{current_user: current_user}}) do
-    cursor = arguments
+    input_cursor = arguments
              |> case do
                %{cursor: cursor} -> cursor
                _ -> %{}
              end
 
-    %{entries: posts, metadata: metadata} = Post
-    |> init_posts_query(reverse_order: true)
-    |> where([p], p.parent_id == ^thread_id)
-    |> Repo.paginate(cursor_fields: [:inserted_at, :id], sort_direction: :asc, limit: cursor[:limit] || 50, before: cursor[:before], after: cursor[:after])
+    %PaginatedPosts{posts: posts, cursor: cursor} = Processes.Thread.paginated_posts_in_thread(thread_id, input_cursor)
+    paginated_posts = %PaginatedPosts{posts: PostView.from_posts(posts, current_user), cursor: cursor}
 
-    IO.inspect("list_thread_posts")
-    IO.inspect(cursor)
-
-    posts_with_voting_scores = PostView.from_posts(posts, current_user)
-
-    {:ok, Openjodel.PaginatedPosts.from_pagination(posts_with_voting_scores, metadata)}
+    {:ok, paginated_posts}
   end
 
   def vote_post(_parent, %{id: id, score: score}, %{context: %{current_user: current_user}}) do
     Processes.Thread.vote_post(current_user, %{post_id: id, score: score})
     |> case do
-      {:ok, voting} = result -> 
-        post = Post |> init_posts_query |> Repo.get!(id)
-        Streams.Server.publish_post_change(post)
+      {:ok, _voting} = result -> 
+        Processes.Thread.find_post(id)
+        |> Streams.Server.publish_post_change
+        
         result
       {:error, _} -> throw("Unable to vote post (TODO: add proper error handling)")
     end
 
     {
       :ok, 
-      Post |> init_posts_query |> Repo.get!(id) |> PostView.from_post(current_user)
+      Processes.Thread.find_post(id) |> PostView.from_post(current_user)
     }
   end
-
-
-  def init_posts_query(queryable, opts \\ []) do
-    order_by = case opts[:reverse_order] do
-      true -> [asc: :inserted_at, asc: :id]
-      _ -> [desc: :inserted_at, desc: :id]
-    end
-
-  
-    queryable |> from(preload: [votings: [], participant: []], order_by: ^order_by)
-  end
-
-
-  # TODO: participant not fetched everytime
 end

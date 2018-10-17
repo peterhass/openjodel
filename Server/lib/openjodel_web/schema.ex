@@ -101,12 +101,11 @@ defmodule OpenjodelWeb.Schema do
       resolve &Resolvers.Content.find_thread/3
     end
 
-    @desc "Get all threads"
-    field :threads, :paginated_posts do
-      arg :stream_id, :id
-      arg :cursor, :cursor_input
-    
-      resolve &Resolvers.Content.list_threads/3
+    @desc "Get stream"
+    field :stream, :stream do
+      arg :id, non_null(:id)
+
+      resolve &Resolvers.Content.find_stream/3
     end
   end
 end

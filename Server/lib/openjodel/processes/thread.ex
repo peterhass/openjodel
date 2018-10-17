@@ -1,7 +1,48 @@
 defmodule Openjodel.Processes.Thread do
 
-  alias Openjodel.{Repo, Post, User, Participant, Voting}
+  alias Openjodel.{Repo, Post, User, Participant, PaginatedPosts, Voting, StreamPost, Stream}
   import Ecto.Query
+
+  defmodule PostQuery do
+    def init(queryable, opts \\ []) do
+      order_by = case opts[:reverse_order] do
+        true -> [asc: :inserted_at, asc: :id]
+        _ -> [desc: :inserted_at, desc: :id]
+      end
+
+    
+      queryable |> from(preload: [votings: [], participant: []], order_by: ^order_by)
+    end
+
+  end
+
+  def find_thread(id) do
+    Post
+    |> PostQuery.init
+    |> Repo.get(id)
+  end
+
+  def find_post(id) do
+    find_thread(id)
+  end
+
+  def paginated_posts_in_thread(thread_id, cursor) do
+   Post
+    |> PostQuery.init(reverse_order: true)
+    |> where([p], p.parent_id == ^thread_id)
+    |> Repo.paginate(cursor_fields: [:inserted_at, :id], sort_direction: :asc, limit: cursor[:limit] || 50, before: cursor[:before], after: cursor[:after])
+    |> PaginatedPosts.from_pagination
+  end
+
+  # TODO: extract into some other module
+  def paginated_threads_in_stream(stream_id, cursor) do
+    Post
+    |> PostQuery.init
+    |> Post.parents
+    |> join(:inner, [p], ps in StreamPost, p.id == ps.post_id and ps.stream_id == ^stream_id)
+    |> Repo.paginate(cursor_fields: [:inserted_at, :id], sort_direction: :desc, limit: cursor[:limit] || 50, before: cursor[:before], after: cursor[:after])
+    |> PaginatedPosts.from_pagination
+  end
 
   def start_thread(%User{} = user, post_attrs) do
     {:ok, result} = Repo.transaction fn ->

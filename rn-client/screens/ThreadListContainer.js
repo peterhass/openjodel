@@ -6,38 +6,40 @@ import _ from 'lodash'
 import { votePostMutation } from './ThreadContainer'
 
 // TODO: replace fixed streamId
-const GET_THREADS = gql`
- query GetThreads($cursor: CursorInput) {
-  threads(cursor: $cursor, streamId: 2) @connection(key: "threads") {
-    cursor {
-      before
-      after
-    }
-    posts {
-      id
-      message
-      insertedAt
-      votingScore
-      currentUserVotingScore
-      parentId
-      imageUrl
-      children {
-        cursor {
-          before
-          after
-        }
-        posts {
-          id
-          message
-          votingScore
-          currentUserVotingScore
-          insertedAt
+const GET_STREAM = gql`
+query GetStream($cursor: CursorInput) {
+  stream(id: 2) {
+    posts(cursor: $cursor) @connection(key: "threads") {
+      cursor {
+        before
+        after
+      }
+      posts {
+        id
+        message
+        insertedAt
+        votingScore
+        currentUserVotingScore
+        parentId
+        imageUrl
+        children {
+          cursor {
+            before
+            after
+          }
+          posts {
+            id
+            message
+            votingScore
+            currentUserVotingScore
+            insertedAt
+          }
         }
       }
     }
+
   }
 }
-
 `
 
 const VOTE_POST_MUTATION = gql`
@@ -97,7 +99,7 @@ const THREAD_CHANGES_SUBSCRIPTION = gql`
 
 const ThreadListContainer = (props) => (
   <Query 
-    query={GET_THREADS}
+    query={GET_STREAM}
     variables={{
       cursor: {
         limit: 20
@@ -107,8 +109,8 @@ const ThreadListContainer = (props) => (
     {({ loading, error, data, subscribeToMore, fetchMore, networkStatus }) => {
       if (loading) return "Loading ..."
       if (error) return `Error! ${error.message}`
-
-      const { threads: { posts, cursor } } = data
+      console.log(data)
+      const { stream: { posts: { posts, cursor } } } = data
 
       return (
        <Mutation mutation={VOTE_POST_MUTATION}>
@@ -121,7 +123,7 @@ const ThreadListContainer = (props) => (
               onPostVoting={(...args) => votePostMutation(votingMutation, ...args)}
               onLoadMore={() => {
                 return fetchMore({
-                  query: GET_THREADS,
+                  query: GET_STREAM,
                   variables: { 
                     cursor: {
                       after: cursor.after,
@@ -130,16 +132,17 @@ const ThreadListContainer = (props) => (
                     }
                   },
                   updateQuery: (prev, { fetchMoreResult }) => {
-                    const prevThreads = prev.threads.posts
-                    const fetchedCursor = fetchMoreResult.threads.cursor
-                    const fetchedThreads = fetchMoreResult.threads.posts
+                    const prevThreads = prev.stream.posts.posts
+                    const fetchedCursor = fetchMoreResult.stream.posts.cursor
+                    const fetchedThreads = fetchMoreResult.stream.posts.posts
 
-
-                    return Object.assign({}, prev, {
-                      threads: Object.assign({}, prev.threads, {
-                        cursor: fetchedCursor,
-                        posts: _.uniqBy([...prevThreads, ...fetchedThreads], 'id')
-                      })
+                    return _.merge({}, prev, {
+                      stream: {
+                        posts: {
+                          cursor: fetchedCursor,
+                          posts: _.uniqBy([...prevThreads, ...fetchedThreads], 'id')
+                        }
+                      }
                     })
                   }
                 })
@@ -150,8 +153,10 @@ const ThreadListContainer = (props) => (
                   updateQuery: (prev, { subscriptionData }) => {
                     if (!subscriptionData.data) return prev
                     return _.merge({}, prev, {
-                      threads: {
-                        posts: [subscriptionData.data.streamThreadAdded, ...prev.threads.posts]
+                      stream: {
+                        posts: {
+                          posts: [subscriptionData.data.streamThreadAdded, ...prev.stream.posts.posts]
+                        }
                       }
                     })
                   }
@@ -164,9 +169,11 @@ const ThreadListContainer = (props) => (
                     const subscriptionPost = subscriptionData.data.streamThreadChanged
 
                     return _.merge({}, prev, { 
-                      threads: { 
-                        posts: prev.threads.posts.map((post) => (post.id == subscriptionPost.id) ? {...post, ...subscriptionPost} : post)
-                      } 
+                      stream: {
+                        posts: { 
+                          posts: prev.stream.posts.posts.map((post) => (post.id == subscriptionPost.id) ? {...post, ...subscriptionPost} : post)
+                        } 
+                      }
                     })
                   }
                 })
