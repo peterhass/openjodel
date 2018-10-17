@@ -88,6 +88,7 @@ defmodule OpenjodelWeb.Schema do
       arg :message, :string
       arg :image, :upload
       arg :parent_id, non_null(:id)
+      arg :geog, list_of(:float)
 
       resolve &Resolvers.Content.create_post/3
     end

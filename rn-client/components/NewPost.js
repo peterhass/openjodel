@@ -6,7 +6,7 @@ import {
   StyleSheet, 
   TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { ImagePicker, Permissions } from 'expo'
+import { ImagePicker, Permissions, Location } from 'expo'
 import { ReactNativeFile } from '../utils/ReactNativeFile'
 
 export default class NewPost extends React.Component {
@@ -67,18 +67,31 @@ export default class NewPost extends React.Component {
       type: response.type
     })
 
-    await this.props.onCreatePost({ image: file })
+    
+    const location = await this.getLocationAsync()
+    const { coords: { latitude, longitude } } = location
+
+
+    await this.props.onCreatePost({ image: file, latitude, longitude })
 
     this.setState({ message: '' }, () => {
       this.inputRef.current.blur()
     })
   }
 
+  async getLocationAsync() {
+    await Permissions.askAsync(Permissions.LOCATION)
+    return await Location.getCurrentPositionAsync({})
+  }
 
-  onSend() {
+
+  async onSend() {
     const { message } = this.state
     
-    return this.props.onCreatePost({ message }).then(() => {
+    const location = await this.getLocationAsync()
+    const { coords: { latitude, longitude } } = location
+
+    return this.props.onCreatePost({ message, latitude, longitude }).then(() => {
       this.setState({ message: '' }, () => {
         this.inputRef.current.blur()
       })

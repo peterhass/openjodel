@@ -88,8 +88,8 @@ subscription onPostAdded($threadId: ID) {
 `
 
 const CREATE_POST_MUTATION = gql`
-mutation CreatePost($message: String, $parentId: ID, $image: Upload) {
-  createPost(message: $message, parentId: $parentId, image: $image) {
+mutation CreatePost($message: String, $parentId: ID, $image: Upload, $latitude: Float, $longitude: Float) {
+  createPost(message: $message, parentId: $parentId, image: $image, geog: [$latitude, $longitude]) {
     id
     message
     votingScore
@@ -151,7 +151,7 @@ const ThreadContainer = ({navigation}) => (
                 thread={data.thread}
                 posts={data.thread.children.posts}
                 onPostVoting={(...args) => votePostMutation(mutation, ...args)}
-                onCreatePost={({message, image}) => createPostMutation({variables: {message, image, parentId: data.thread.id, hasImage: !!image}})}
+                onCreatePost={({message, image, ...rest}) => createPostMutation({variables: {message, image, parentId: data.thread.id, hasImage: !!image, ...rest}})}
                 onLoadMore={() => {
                   return fetchMore({
                     query: FIND_THREAD,
