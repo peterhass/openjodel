@@ -52,6 +52,7 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :openjodel, Openjodel.Repo,
   adapter: Ecto.Adapters.Postgres,
+  types: Openjodel.PostgresTypes,
   username: "webappmitphoenix_dev",
   password: "webappmitphoenix",
   database: "webappmitphoenix_dev",

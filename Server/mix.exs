@@ -47,7 +47,8 @@ defmodule Openjodel.Mixfile do
       {:absinthe_plug, "~> 1.4"},
       {:poison, "~> 3.1.0"},
       {:faker, "~> 0.10"},
-      {:paginator, "~> 0.4"}
+      {:paginator, "~> 0.4"},
+      {:geo_postgis, "~> 2.0"}
     ]
   end
 

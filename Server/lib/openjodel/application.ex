@@ -14,7 +14,9 @@ defmodule Openjodel.Application do
       supervisor(OpenjodelWeb.Endpoint, []),
       # Start your own worker by calling: Openjodel.Worker.start_link(arg1, arg2, arg3)
       # worker(Openjodel.Worker, [arg1, arg2, arg3]),
-      supervisor(Absinthe.Subscription, [OpenjodelWeb.Endpoint])
+      supervisor(Absinthe.Subscription, [OpenjodelWeb.Endpoint]),
+
+      worker(OpenjodelWeb.Streams.Server, [])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

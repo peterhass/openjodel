@@ -5,10 +5,10 @@ import { Query, Mutation } from 'react-apollo'
 import _ from 'lodash'
 import { votePostMutation } from './ThreadContainer'
 
-
+// TODO: replace fixed streamId
 const GET_THREADS = gql`
  query GetThreads($cursor: CursorInput) {
-  threads(cursor: $cursor) @connection(key: "threads") {
+  threads(cursor: $cursor, streamId: 2) @connection(key: "threads") {
     cursor {
       before
       after
@@ -55,7 +55,7 @@ const VOTE_POST_MUTATION = gql`
 
 const THREAD_ADDED_SUBSCRIPTION = gql`
   subscription onThreadAdded {
-    threadAdded {
+    streamThreadAdded(streamId: 2) {
       id
       message
       insertedAt
@@ -82,7 +82,7 @@ const THREAD_ADDED_SUBSCRIPTION = gql`
 
 const THREAD_CHANGES_SUBSCRIPTION = gql`
   subscription onThreadChanges {
-    threadChanges {
+    streamThreadChanged(streamId: 2) {
       id
       message
       insertedAt
@@ -151,7 +151,7 @@ const ThreadListContainer = (props) => (
                     if (!subscriptionData.data) return prev
                     return _.merge({}, prev, {
                       threads: {
-                        posts: [subscriptionData.data.threadAdded, ...prev.threads.posts]
+                        posts: [subscriptionData.data.streamThreadAdded, ...prev.threads.posts]
                       }
                     })
                   }
@@ -161,8 +161,7 @@ const ThreadListContainer = (props) => (
                   document: THREAD_CHANGES_SUBSCRIPTION,
                   updateQuery: (prev, { subscriptionData }) => {
                     if (!subscriptionData.data) return prev
-
-                    const subscriptionPost = subscriptionData.data.threadChanges
+                    const subscriptionPost = subscriptionData.data.streamThreadChanged
 
                     return _.merge({}, prev, { 
                       threads: { 

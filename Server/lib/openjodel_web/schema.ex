@@ -17,21 +17,6 @@ defmodule OpenjodelWeb.Schema do
   end
 
   subscription do
-    
-    field :thread_changes, :post do
-      config fn args, _ ->
-        {:ok, topic: :is_thread}
-      end
-
-      trigger :vote_post, topic: fn post ->
-        case post.parent_id do
-          nil -> :is_thread
-          _ -> :is_post
-        end
-      end
-
-      resolve &Resolvers.Content.resource_for_user/3
-    end
 
     field :thread_post_changes, :post do
       arg :thread_id, non_null(:id)
@@ -39,22 +24,27 @@ defmodule OpenjodelWeb.Schema do
       config fn args, _ ->
         {:ok, topic: args.thread_id}
       end
-
-
-      trigger :vote_post, topic: fn post ->
-        post.parent_id
-      end
       
       resolve &Resolvers.Content.resource_for_user/3
 
     end
 
-    field :thread_added, :post do
+    field :stream_thread_added, :post do
+      arg :stream_id, non_null(:id)
+      
       config fn args, _ ->
-        {:ok, topic: :is_thread}
+        {:ok, topic: args.stream_id}
+      end
+    end
+
+    field :stream_thread_changed, :post do
+      arg :stream_id, non_null(:id)
+
+      config fn args, _ ->
+        {:ok, topic: args.stream_id}
       end
 
-      trigger :create_thread, topic: fn thread -> :is_thread end
+      resolve &Resolvers.Content.resource_for_user/3
     end
 
     field :post_added, :post do
@@ -89,6 +79,7 @@ defmodule OpenjodelWeb.Schema do
     field :create_thread, :post do
       arg :message, :string
       arg :image, :upload
+      arg :geog, list_of(:float)
 
       resolve &Resolvers.Content.create_thread/3
     end
@@ -110,8 +101,9 @@ defmodule OpenjodelWeb.Schema do
       resolve &Resolvers.Content.find_thread/3
     end
 
-    @desc "Get all thread posts"
+    @desc "Get all threads"
     field :threads, :paginated_posts do
+      arg :stream_id, :id
       arg :cursor, :cursor_input
     
       resolve &Resolvers.Content.list_threads/3

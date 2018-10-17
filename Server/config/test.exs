@@ -12,6 +12,7 @@ config :logger, level: :warn
 # Configure your database
 config :openjodel, Openjodel.Repo,
   adapter: Ecto.Adapters.Postgres,
+  types: Openjodel.PostgresTypes,
   username: "postgres",
   password: "postgres",
   database: "openjodel_test",

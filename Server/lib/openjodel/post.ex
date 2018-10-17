@@ -7,6 +7,7 @@ defmodule Openjodel.Post do
     field :message, :string
     field :inserted_at, :utc_datetime
     field :has_image, :boolean
+    field :geog, Geo.PostGIS.Geometry
 
     has_many :children, Post, foreign_key: :parent_id
     belongs_to :parent, Post
@@ -21,27 +22,28 @@ defmodule Openjodel.Post do
 
   def changeset(%Post{} = post, attrs) do
     post 
-    |> cast(attrs, [:has_image, :message, :inserted_at, :parent_id])
+    |> cast(attrs, [:has_image, :geog, :message, :inserted_at, :parent_id])
     |> foreign_key_constraint(:parent_id)
     |> foreign_key_constraint(:participant_id)
     |> validate_message_or_post
-    |> validate_required([:inserted_at])
+    |> validate_required([:geog, :inserted_at])
   end
 
 
   def post_changeset(%Post{} = post, attrs) do
     post 
-    |> cast(attrs, [:has_image, :message, :inserted_at, :parent_id])
+    |> cast(attrs, [:has_image, :geog, :message, :inserted_at, :parent_id])
     |> foreign_key_constraint(:parent_id)
     |> foreign_key_constraint(:participant_id)
     |> validate_message_or_post
-    |> validate_required([:inserted_at, :participant_id, :parent_id])
+    |> validate_required([:geog, :inserted_at, :participant_id, :parent_id])
   end
 
   def thread_changeset(%Post{} = post, attrs) do
     post
-    |> cast(attrs, [:has_image, :message, :inserted_at])
+    |> cast(attrs, [:geog, :has_image, :message, :inserted_at])
     |> validate_message_or_post
+    |> validate_required([:geog])
   end
 
   defp validate_message_or_post(changeset) do

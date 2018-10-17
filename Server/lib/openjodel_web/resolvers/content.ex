@@ -1,6 +1,7 @@
 defmodule OpenjodelWeb.Resolvers.Content do
-  alias Openjodel.{Repo, Post, Voting, User, PaginatedPosts}
+  alias Openjodel.{Repo, Post, Voting, User, PaginatedPosts, Stream, StreamPost}
   alias Openjodel.Processes
+  alias OpenjodelWeb.Streams
   alias OpenjodelWeb.PostView
   import Ecto.Query
 
@@ -15,16 +16,28 @@ defmodule OpenjodelWeb.Resolvers.Content do
     {:ok, User |> where([u], u.token == ^token) |> Repo.one!}
   end
 
+  defp convert_post_attrs(post_attrs) do
+    Map.merge(post_attrs, %{
+      "geog": %{
+        "coordinates" => post_attrs.geog,
+        "type" => "Point",
+        "srid" => 4326
+      }
+    })
+  end
+
   def create_thread(_, post_attrs, %{context: %{current_user: current_user}}) do
-    Processes.Thread.start_thread(current_user, post_attrs)
+    Processes.Thread.start_thread(current_user, convert_post_attrs(post_attrs))
     |> case do
-      {:ok, thread} -> {:ok, thread}
-      {:error, _} -> throw("Unable to create thread (TODO: add proper error handling)")
+      {:ok, thread} -> 
+        Streams.Server.attach_thread(thread)
+        {:ok, thread}
+      {:error, e} -> throw(e)
     end
   end
 
   def create_post(_, post_attrs, %{context: %{current_user: current_user}}) do
-    Processes.Thread.add_post(current_user, post_attrs)
+    Processes.Thread.add_post(current_user, convert_post_attrs(post_attrs))
     |> case do
       {:ok, post} -> {:ok, post}
       {:error, e} -> throw(e)
@@ -37,9 +50,16 @@ defmodule OpenjodelWeb.Resolvers.Content do
                %{cursor: cursor} -> cursor
                _ -> %{}
              end
+    stream_id = arguments
+                |> case do
+                  %{stream_id: stream_id} -> stream_id
+                  _ -> nil
+                end
+
     %{entries: threads, metadata: metadata} = Post
               |> init_posts_query
               |> Post.parents
+              |> join(:inner, [p], ps in StreamPost, p.id == ps.post_id and ps.stream_id == ^stream_id)
               |> Repo.paginate(cursor_fields: [:inserted_at, :id], sort_direction: :desc, limit: cursor[:limit] || 50, before: cursor[:before], after: cursor[:after])
 
     IO.inspect("======== list_threads ===========")
@@ -87,7 +107,10 @@ defmodule OpenjodelWeb.Resolvers.Content do
   def vote_post(_parent, %{id: id, score: score}, %{context: %{current_user: current_user}}) do
     Processes.Thread.vote_post(current_user, %{post_id: id, score: score})
     |> case do
-      {:ok, _} = result -> result
+      {:ok, voting} = result -> 
+        post = Post |> init_posts_query |> Repo.get!(id)
+        Streams.Server.publish_post_change(post)
+        result
       {:error, _} -> throw("Unable to vote post (TODO: add proper error handling)")
     end
 

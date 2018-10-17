@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, FlatList, Button, StyleSheet, TextInput, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { ImagePicker, Permissions } from 'expo'
+import { ImagePicker, Permissions, Location } from 'expo'
 import { ReactNativeFile } from '../utils/ReactNativeFile'
 
 export default class NewThread extends React.Component {
@@ -46,10 +46,19 @@ export default class NewThread extends React.Component {
     </KeyboardAvoidingView>)
   }
 
-  onCreateThread() {
+  async onCreateThread() {
     const { message } = this.state
-    
-    return this.props.onCreateThread({ message })
+
+    const location = await this.getLocationAsync()
+    const { coords: { latitude, longitude } } = location
+
+    console.log(location)
+    return this.props.onCreateThread({ message, latitude, longitude })
+  }
+
+  async getLocationAsync() {
+    await Permissions.askAsync(Permissions.LOCATION)
+    return await Location.getCurrentPositionAsync({})
   }
 
   async onAttachImage() { 
@@ -69,7 +78,10 @@ export default class NewThread extends React.Component {
       type: response.type
     })
 
-    return this.props.onCreateThread({ image: file })
+    const {latitude, longitude} = await this.getLocationAsync()
+
+    console.log({latitude, longitude})
+    return this.props.onCreateThread({ image: file, latitude, longitude })
   }
 }
 

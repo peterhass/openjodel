@@ -17,6 +17,7 @@ To start your Phoenix server:
 
   * Navigate to `Server/`
   * Install dependencies with `mix deps.get`
+  * Install [PostGIS extension](https://postgis.net/install/)
   * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
   * Start Phoenix endpoint with `mix phx.server`
 
