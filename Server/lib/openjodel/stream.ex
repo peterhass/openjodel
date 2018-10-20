@@ -3,5 +3,6 @@ defmodule Openjodel.Stream do
 
   schema "streams" do
     field :inserted_at, :utc_datetime
+    field :name, :string
   end
 end

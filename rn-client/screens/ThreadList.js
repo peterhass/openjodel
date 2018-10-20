@@ -1,17 +1,52 @@
 import React from 'react'
-import { View, Text, FlatList, TouchableHighlight, StyleSheet } from 'react-native'
+import { View, Text, Button, FlatList, TouchableHighlight, StyleSheet } from 'react-native'
 import Post from '../components/Post'
 import { Ionicons } from '@expo/vector-icons'
 
+const StreamHeader = ({ stream, onPress }) => {
+  const streamName = stream ? (stream.name || `<${stream.id}>`) : '-'
+
+  return (
+    <Button onPress={onPress} title={streamName} />
+  )
+}
+
+// TODO: find a nicer solution to this empty-stream-problem
+export class EmptyStream extends React.Component {
+
+  static navigationOptions = ({ navigation })  => ({
+    headerTitle: <StreamHeader stream={null} onPress={() => navigation.navigate('StreamSelection')} />
+  })
+
+  render() {
+    return (null)
+  }
+}
+
 export default class ThreadList extends React.Component {
+  static navigationOptions = ({ navigation })  => ({
+    headerTitle: <StreamHeader stream={navigation.getParam('stream')} onPress={() => navigation.navigate('StreamSelection')} />
+  })
+
   constructor() {
     super()
 
     this.state = { isLoading: false }
   }
 
+  componentWillMount() {
+    this.props.navigation.setParams({ stream: this.props.stream })
+  }
+
   componentDidMount() {
     this.props.subscribeToThreadsChanges()
+
+    this.props.navigation.setParams({ stream: this.props.stream })
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.stream !== this.props.stream)
+      this.props.navigation.setParams({ stream: this.props.stream })
   }
 
   render() {
@@ -56,7 +91,6 @@ export default class ThreadList extends React.Component {
   loadMoreRows() {
 
 
-    console.log('loadMoreRows', { isLoading: this.state.isLoading })
     if (this.state.isLoading) return
 
     return this.setState({ ...this.state, isLoading: true }, () => {

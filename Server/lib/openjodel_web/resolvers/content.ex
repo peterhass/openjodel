@@ -34,6 +34,10 @@ defmodule OpenjodelWeb.Resolvers.Content do
     })
   end
 
+  def list_streams(_, _attrs, %{context: %{current_user: _current_user}}) do
+    {:ok, Streams.Query.all}
+  end
+
   def create_thread(_, post_attrs, %{context: %{current_user: current_user}}) do
     Posts.StartThread.start(current_user, convert_post_attrs(post_attrs))
     |> case do

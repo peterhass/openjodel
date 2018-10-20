@@ -7,11 +7,13 @@ import LoginContainer from './screens/LoginContainer'
 import AuthLoading from './screens/AuthLoading'
 import NewThreadContainer from './screens/NewThreadContainer'
 import ThreadContainer from './screens/ThreadContainer'
+import StreamSelectionContainer from './screens/StreamSelectionContainer'
 
 const AppStack = createStackNavigator({
   Home: ThreadListContainer,
   NewThread: NewThreadContainer,
   Thread: ThreadContainer,
+  StreamSelection: StreamSelectionContainer
 })
 
 const AuthStack = createStackNavigator({

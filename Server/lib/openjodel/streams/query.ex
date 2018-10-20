@@ -5,6 +5,11 @@ defmodule Openjodel.Streams.Query do
     Stream
   }
 
+  def all do
+    Stream
+    |> Repo.all
+  end
+
   def find(id) do
     Stream |> Repo.get(id)
   end

@@ -2,7 +2,6 @@ defmodule OpenjodelWeb.Schema.ContentTypes do
   use Absinthe.Schema.Notation
 
   alias OpenjodelWeb.Resolvers
-
   object :participant do
     field :name, :string
   end
@@ -25,6 +24,8 @@ defmodule OpenjodelWeb.Schema.ContentTypes do
 
   object :stream do
     field :id, :id
+    field :name, :string
+    field :inserted_at, :datetime
     field :posts, :paginated_posts do
       arg :cursor, :cursor_input
       resolve &Resolvers.Content.list_threads/3
