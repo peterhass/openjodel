@@ -46,5 +46,6 @@ class Setting {
 }
 
 export default {
-  homeStreamId: new Setting('home-stream-id')
+  homeStreamId: new Setting('home-stream-id'),
+  authToken: new Setting('auth-token')
 }

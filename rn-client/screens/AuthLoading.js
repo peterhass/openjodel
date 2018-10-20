@@ -1,22 +1,20 @@
 import React from 'react'
 import { ActivityIndicator, View, StatusBar } from 'react-native'
-import { auth } from '../apollo_client'
+import Settings from '../utils/Settings'
 
 export default class AuthLoading extends React.Component {
   constructor() {
     super()
 
-    //auth.setTokenAsync(null)
     this.checkAuthentication = this.checkAuthentication.bind(this)
   }
 
   componentDidMount() {
-    auth.getTokenAsync().then(this.checkAuthentication)
-    auth.subscribe(this.checkAuthentication)
+    Settings.authToken.subscribe(this.checkAuthentication, true)
   }
 
   componentWillUnmount() {
-    auth.unsubscribe(this.checkAuthentication)
+    Settings.authToken.unsubscribe(this.checkAuthentication)
   }
 
   checkAuthentication(authenticated) {

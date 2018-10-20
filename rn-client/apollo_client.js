@@ -11,6 +11,7 @@ import * as AbsintheSocket from '@absinthe/socket'
 import { createAbsintheSocketLink } from '@absinthe/socket-apollo-link'
 import { SecureStore } from 'expo'
 import { BACKEND_HOST } from 'react-native-dotenv'
+import Settings from './utils/Settings'
 import { createLink as createHttpLink } from 'apollo-absinthe-upload-link'
 
 const HttpEndpoint = {
@@ -21,42 +22,9 @@ const SocketEndpoint = {
   uri: `ws://${BACKEND_HOST}/socket`
 }
 
-class Auth {
-  constructor() {
-    this.subscribers = []
-  }
-
-  subscribe(fn) {
-    return this.subscribers.push(fn)
-  }
-
-  unsubscribe(fn) {
-    this.subscribers = this.subscribers.filter((item) => item !== fn)
-  }
-
-  setTokenAsync(token) {
-    const promise = token !== null ? SecureStore.setItemAsync('auth-token', token)
- : SecureStore.deleteItemAsync('auth-token')
-
-    return promise.then(() => {
-      this.notifyAll(token)
-    })
-  }
-
-  getTokenAsync() {
-    return SecureStore.getItemAsync('auth-token')
-  }
-  
-  notifyAll(value) {
-    this.subscribers.forEach(subscriber => subscriber(value))
-  }
-}
-
-const auth = new Auth()
-
 const buildClient = () => {
 
-  return auth.getTokenAsync().then((token) => {
+  return Settings.authToken.getAsync().then((token) => {
     const cache = new InMemoryCache()
     const link = ApolloLink.from([
       onError(({ graphQLErrors, networkError  }) => {
@@ -104,5 +72,5 @@ const buildClient = () => {
   })
 
 }
-export { auth, buildClient }
+export { buildClient }
 export default buildClient
