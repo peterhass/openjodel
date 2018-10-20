@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, FlatList, Button, StyleSheet, TextInput, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
+import { ActivityIndicator, Modal, View, Text, FlatList, Button, StyleSheet, TextInput, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { ImagePicker, Permissions, Location } from 'expo'
 import { ReactNativeFile } from '../utils/ReactNativeFile'
@@ -16,7 +16,7 @@ export default class NewThread extends React.Component {
 
   constructor() {
     super()
-    this.state = { message: '' }
+    this.state = { message: '', postingInProgress: false }
     this.onCreateThread = this.onCreateThread.bind(this)
     this.onAttachImage = this.onAttachImage.bind(this)
   }
@@ -26,10 +26,19 @@ export default class NewThread extends React.Component {
   }
   
   render() {
-    const { message } = this.state
+    const { message, postingInProgress } = this.state
 
     return (
     <KeyboardAvoidingView style={{ width: '100%', height: '100%' }}>
+      <Modal
+        visible={postingInProgress}
+        animationType="slide"
+      >
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator size="large" style={{ marginBottom: 10 }} />
+           <Text>Shouting your message into the internet ...</Text>
+        </View>
+      </Modal>
       <View style={styles.textInputContainer}>
         <TextInput 
           style={styles.textInput}
@@ -47,13 +56,17 @@ export default class NewThread extends React.Component {
   }
 
   async onCreateThread() {
+    this.setState({ ...this.state, postingInProgress: true })
     const { message } = this.state
 
     const location = await this.getLocationAsync()
     const { coords: { latitude, longitude } } = location
 
     console.log(location)
-    return this.props.onCreateThread({ message, latitude, longitude })
+    return this.props.onCreateThread({ message, latitude, longitude }).then(() => {
+      //looks like this is not nessecary because we navigate away from this screen
+      //this.setState({ ...this.state, postingInProgress: false })
+    })
   }
 
   async getLocationAsync() {
@@ -62,6 +75,8 @@ export default class NewThread extends React.Component {
   }
 
   async onAttachImage() { 
+    this.setState({ ...this.state, postingInProgress: true })
+
     await Promise.all([
       await Permissions.askAsync(Permissions.CAMERA_ROLL),
       await Permissions.askAsync(Permissions.CAMERA)
@@ -81,8 +96,13 @@ export default class NewThread extends React.Component {
     const {latitude, longitude} = await this.getLocationAsync()
 
     console.log({latitude, longitude})
-    return this.props.onCreateThread({ image: file, latitude, longitude })
+    return this.props.onCreateThread({ image: file, latitude, longitude }).then(() => {
+      //looks like this is not nessecary because we navigate away from this screen
+      //this.setState({ ...this.state, postingInProgress: false })
+    })
   }
+
+
 }
 
 
