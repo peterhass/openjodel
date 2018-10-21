@@ -35,6 +35,7 @@ export default class StreamSelectionContainer extends React.Component {
             <StreamSelection
               streams={streams}
               onOpenStream={this.setHomeStream}
+              onNavigateNewStream={() => this.props.navigation.navigate('NewStream')}
             />
           )
         }}

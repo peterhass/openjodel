@@ -8,12 +8,14 @@ import AuthLoading from './screens/AuthLoading'
 import NewThreadContainer from './screens/NewThreadContainer'
 import ThreadContainer from './screens/ThreadContainer'
 import StreamSelectionContainer from './screens/StreamSelectionContainer'
+import NewStreamContainer from './screens/NewStreamContainer'
 
 const AppStack = createStackNavigator({
   Home: ThreadListContainer,
   NewThread: NewThreadContainer,
   Thread: ThreadContainer,
-  StreamSelection: StreamSelectionContainer
+  StreamSelection: StreamSelectionContainer,
+  NewStream: NewStreamContainer
 })
 
 const AuthStack = createStackNavigator({
