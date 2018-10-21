@@ -75,6 +75,14 @@ export default class NewThread extends React.Component {
   }
 
   async onAttachImage() { 
+    const response = await ImagePicker.launchCameraAsync({
+      compress: 0.8,
+      exif: true
+    }) 
+
+    if(response.cancelled)
+      return
+
     this.setState({ ...this.state, postingInProgress: true })
 
     await Promise.all([
@@ -82,10 +90,6 @@ export default class NewThread extends React.Component {
       await Permissions.askAsync(Permissions.CAMERA)
     ])
 
-    const response = await ImagePicker.launchCameraAsync({
-      compress: 0.8,
-      exif: true
-    }) 
 
     const file = new ReactNativeFile({
       name: "img",
@@ -93,7 +97,8 @@ export default class NewThread extends React.Component {
       type: response.type
     })
 
-    const {latitude, longitude} = await this.getLocationAsync()
+    const location = await this.getLocationAsync()
+    const { coords: { latitude, longitude } } = location
 
     console.log({latitude, longitude})
     return this.props.onCreateThread({ image: file, latitude, longitude }).then(() => {
