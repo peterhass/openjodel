@@ -182,7 +182,7 @@ export default class ThreadListContainer extends React.Component {
                       return _.merge({}, prev, {
                         stream: {
                           posts: {
-                            posts: [subscriptionData.data.streamThreadAdded, ...prev.stream.posts.posts]
+                            posts: _.uniqBy([subscriptionData.data.streamThreadAdded, ...prev.stream.posts.posts], 'id')
                           }
                         }
                       })
