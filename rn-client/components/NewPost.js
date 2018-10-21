@@ -1,7 +1,9 @@
 import React from 'react'
 import { 
   View, 
+  ActivityIndicator,
   TextInput, 
+  Text,
   Button, 
   StyleSheet, 
   TouchableOpacity } from 'react-native'
@@ -12,7 +14,7 @@ import { ReactNativeFile } from '../utils/ReactNativeFile'
 export default class NewPost extends React.Component {
   constructor() {
     super()
-    this.state = { message: '' }
+    this.state = { message: '', postingInProgress: false }
 
     this.inputRef = React.createRef()
     this.onSend = this.onSend.bind(this)
@@ -21,8 +23,20 @@ export default class NewPost extends React.Component {
 
 
   render() {
-    const { message } = this.state
+    const { message, postingInProgress } = this.state
     const { onCreatePost } = this.props
+
+    if (postingInProgress) {
+      return (
+        <View style={styles.box}>
+
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <ActivityIndicator size="large" style={{ marginBottom: 10 }} />
+            <Text>Shouting your message into the internet ...</Text>
+          </View>
+        </View>
+      )
+    }
 
     return (<View style={styles.box}>
       <TextInput
@@ -51,15 +65,20 @@ export default class NewPost extends React.Component {
   }
 
   async onAttachImage() { 
-    await Promise.all([
-      await Permissions.askAsync(Permissions.CAMERA_ROLL),
-      await Permissions.askAsync(Permissions.CAMERA)
-    ])
-
     const response = await ImagePicker.launchCameraAsync({
       compress: 0.8,
       exif: true
     }) 
+
+    if(response.cancelled)
+      return
+
+    this.setState({ ...this.state, postingInProgress: true })
+
+    await Promise.all([
+      await Permissions.askAsync(Permissions.CAMERA_ROLL),
+      await Permissions.askAsync(Permissions.CAMERA)
+    ])
 
     const file = new ReactNativeFile({
       name: "img",
@@ -74,7 +93,7 @@ export default class NewPost extends React.Component {
 
     await this.props.onCreatePost({ image: file, latitude, longitude })
 
-    this.setState({ message: '' }, () => {
+    this.setState({ message: '', postingInProgress: false }, () => {
       this.inputRef.current.blur()
     })
   }
@@ -87,12 +106,13 @@ export default class NewPost extends React.Component {
 
   async onSend() {
     const { message } = this.state
+    this.setState({ ...this.state, postingInProgress: true })
     
     const location = await this.getLocationAsync()
     const { coords: { latitude, longitude } } = location
 
     return this.props.onCreatePost({ message, latitude, longitude }).then(() => {
-      this.setState({ message: '' }, () => {
+      this.setState({ message: '', postingInProgress: false }, () => {
         this.inputRef.current.blur()
       })
     })
