@@ -29,7 +29,7 @@ export default class NewThread extends React.Component {
     const { message, postingInProgress } = this.state
 
     return (
-    <KeyboardAvoidingView style={{ width: '100%', height: '100%' }}>
+    <KeyboardAvoidingView style={{ height: '100%', flex: 1 }}  behavior="padding">
       <Modal
         visible={postingInProgress}
         animationType="slide"
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   textInput: {
-    height: '100%',
+    flex: 1,
     backgroundColor: '#e2e2e2',
     borderRadius: 5,
     padding: 10,
