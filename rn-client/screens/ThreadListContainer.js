@@ -126,7 +126,7 @@ export default class ThreadListContainer extends React.Component {
         />)
 
     return (
-    <Query query={GET_STREAM} variables={{ id: streamId, cursor: { limit: 20 } }} options={ { fetchPolicy: 'cache-and-network' } }>
+    <Query query={GET_STREAM} variables={{ id: streamId, cursor: { limit: 20 } }} fetchPolicy={'cache-and-network'}>
       {({ loading, error, data, subscribeToMore, fetchMore, networkStatus }) => {
         if (loading) return "Loading ..."
         if (error) return `Error! ${error.message}`

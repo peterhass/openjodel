@@ -39,6 +39,7 @@ export default class ThreadList extends React.Component {
   }
 
   componentDidMount() {
+    console.log('calling subscribeToThreadsChanges')
     this.props.subscribeToThreadsChanges()
 
     this.props.navigation.setParams({ stream: this.props.stream })
