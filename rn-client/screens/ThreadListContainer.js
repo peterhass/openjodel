@@ -6,7 +6,6 @@ import _ from 'lodash'
 import { votePostMutation } from './ThreadContainer'
 import Settings from '../utils/Settings'
 
-// TODO: replace fixed streamId
 const GET_STREAM = gql`
 query GetStream($id: ID, $cursor: CursorInput) {
   stream(id: $id) {
@@ -126,9 +125,8 @@ export default class ThreadListContainer extends React.Component {
           navigation={props.navigation}
         />)
 
-    console.log({streamId})
     return (
-    <Query query={GET_STREAM} variables={{ id: streamId, cursor: { limit: 20 } }} >
+    <Query query={GET_STREAM} variables={{ id: streamId, cursor: { limit: 20 } }} options={ { fetchPolicy: 'cache-and-network' } }>
       {({ loading, error, data, subscribeToMore, fetchMore, networkStatus }) => {
         if (loading) return "Loading ..."
         if (error) return `Error! ${error.message}`

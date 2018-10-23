@@ -24,7 +24,7 @@ export default class StreamSelectionContainer extends React.Component {
   }
   render() {
     return (
-      <Query query={GET_STREAMS}>
+      <Query query={GET_STREAMS} options={{ fetchPolicy: 'network-only' }}>
         {({ loading, error, data, subscribeToMore, fetchMore, networkStatus }) => {
           if (loading) return "Loading ..."
           if (error) return `Error! ${error.message}`
