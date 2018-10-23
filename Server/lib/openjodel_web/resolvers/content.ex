@@ -34,8 +34,26 @@ defmodule OpenjodelWeb.Resolvers.Content do
     })
   end
 
+  defp convert_stream_attrs(attrs) do
+    Map.merge(attrs, %{
+      geog: %{
+        "coordinates" => attrs.geog,
+        "type" => "Point",
+        "srid" => 4326
+      }
+    })
+  end
+
   def list_streams(_, _attrs, %{context: %{current_user: _current_user}}) do
-    {:ok, Streams.Query.all}
+    {:ok, Streams.Query.all()}
+  end
+
+  def create_stream(_, stream_attrs, %{context: %{current_user: current_user}}) do
+    Streams.create(current_user, convert_stream_attrs(stream_attrs))
+    |> case do
+      {:ok, stream} -> {:ok, stream}
+      {:error, e} -> throw(e)
+    end
   end
 
   def create_thread(_, post_attrs, %{context: %{current_user: current_user}}) do

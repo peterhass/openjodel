@@ -1,6 +1,7 @@
 import React from 'react'
 import { ActivityIndicator, Modal, View, Text, FlatList, Button, StyleSheet, TextInput, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { MapView, Permissions, Location } from 'expo'
+import _ from 'lodash'
 
 class LocationSelection extends React.Component { 
   constructor() {
@@ -27,7 +28,10 @@ class LocationSelection extends React.Component {
 
       const { coords } = await Location.getCurrentPositionAsync();
       const newRegion = { ...this.state.region, latitude: coords.latitude, longitude: coords.longitude }
-      this.setState({ ...this.state, region: newRegion })
+      this.setState({ ...this.state, region: newRegion }, () => {
+        if(this.props.onChangeLocation)
+          this.props.onChangeLocation( newRegion )
+      })
     }
 
     loadUserLocationIntoMap()
@@ -49,43 +53,86 @@ class LocationSelection extends React.Component {
         <MapView.Circle 
           center={this.state.region}
           radius={this.state.radius}
-          fillColor="red"
         />
       </MapView>
     )
   }
 
   onRegionChange(location) {
-    this.setState({ ...this.state, region: location })
+    this.setState({ ...this.state, region: location }, () => {
+      const cb = this.props.onChangeLocation
+
+      if(cb) {
+        cb(location)
+      }
+    })
   }
 }
 
 export default class NewStream extends React.Component {
-  static navigationOptions = {}
+  static navigationOptions = ({ navigation }) => ({
+    headerRight: (
+      <Button
+        onPress={navigation.getParam('onCreate') || (() => {})}
+        title="Next"
+      />
+    )
+  })
 
   constructor() {
     super()
 
-    this.state = { name: '' }
+    this.state = { name: '', location: null, loading: false }
+  }
+
+  componentDidMount() {
+    this.props.navigation.setParams({ onCreate: this.onCreate.bind(this) })
   }
 
 
   render() {
-    const { name } = this.state
+    const { name, loading } = this.state
 
     return (
-      <View style={{ flex: 1, height: '100%' }}>
+      <View style={{ flex: 1, height: '100%' }}> 
+        <Modal
+          visible={loading}
+          animationType="slide"
+        >
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <ActivityIndicator size="large" style={{ marginBottom: 10 }} />
+             <Text>Creating stream ...</Text>
+          </View>
+        </Modal>
         <View style={styles.nameInputContainer}>
           <TextInput
             style={styles.nameInput}
-            onChangeText={(name) => this.setState({name})}
+            onChangeText={(name) => this.setState({...this.state, name})}
             placeholder="Stream name (eg. 'Vienna')"
             value={name}
           />
         </View>
-        <LocationSelection />
+        <LocationSelection 
+          onChangeLocation={(location) => this.setState({...this.state, location})}
+        />
       </View>
     )
+  }
+
+  onCreate() {
+    const { name, location } = this.state
+    const nameIsEmpty = !_.trim(name)
+    if (nameIsEmpty) { 
+      return;
+    }
+
+    this.setState({ ...this.state, loading: true })
+
+    this.props.onCreateStream({
+      name,
+      latitude: location.latitude,
+      longitude: location.longitude
+    })
   }
 }
 

@@ -90,6 +90,13 @@ defmodule OpenjodelWeb.Schema do
 
       resolve(&Resolvers.Content.create_post/3)
     end
+
+    field :create_stream, :stream do
+      arg(:name, :string)
+      arg(:geog, list_of(:float))
+
+      resolve(&Resolvers.Content.create_stream/3)
+    end
   end
 
   query do
