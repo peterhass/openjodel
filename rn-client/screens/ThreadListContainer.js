@@ -108,6 +108,7 @@ export default class ThreadListContainer extends React.Component {
     
     this.setStreamId = (newStreamId) => this.setState({ streamId: newStreamId })
   }
+  
   componentDidMount() {
     Settings.homeStreamId.subscribe(this.setStreamId, true)
   }
@@ -126,13 +127,13 @@ export default class ThreadListContainer extends React.Component {
         />)
 
     return (
-    <Query query={GET_STREAM} variables={{ id: streamId, cursor: { limit: 20 } }} fetchPolicy={'cache-and-network'}>
-      {({ loading, error, data, subscribeToMore, fetchMore, networkStatus }) => {
+    <Query query={GET_STREAM} variables={{ id: streamId, cursor: { limit: 20 } }} fetchPolicy={'network-only'}>
+      {({ loading, error, data, stale, subscribeToMore, fetchMore, networkStatus }) => {
         if (loading) return "Loading ..."
         if (error) return `Error! ${error.message}`
         const { stream } = data
         const { stream: { posts: { posts, cursor } } } = data
-        
+
         return (
          <Mutation mutation={VOTE_POST_MUTATION}>
             {votingMutation => (

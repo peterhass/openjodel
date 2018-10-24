@@ -61,8 +61,6 @@ export default class ThreadList extends React.Component {
           renderItem={this.rowRenderer.bind(this)}
           keyExtractor={thread => thread.id}
           onEndReached={this.loadMoreRows.bind(this)}
-
-
           ItemSeparatorComponent={() => (<View style={{ height: 10, backgroundColor: 'white' }} />)}
         />
         <View style={styles.floatingActionContainer} pointerEvents="box-none">
@@ -90,8 +88,6 @@ export default class ThreadList extends React.Component {
   }
 
   loadMoreRows() {
-
-
     if (this.state.isLoading) return
 
     return this.setState({ ...this.state, isLoading: true }, () => {
