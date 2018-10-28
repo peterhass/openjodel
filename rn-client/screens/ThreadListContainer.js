@@ -107,6 +107,7 @@ export default class ThreadListContainer extends React.Component {
     this.state = { streamId: null }
     
     this.setStreamId = (newStreamId) => this.setState({ streamId: newStreamId })
+    this.setStreamId = (newStreamId) => {console.log('new stream id: ', newStreamId); this.setState({ streamId: newStreamId })} 
   }
   
   componentDidMount() {

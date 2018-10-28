@@ -97,6 +97,14 @@ defmodule OpenjodelWeb.Schema do
 
       resolve(&Resolvers.Content.create_stream/3)
     end
+
+    @desc "Find or create a stream for the given location"
+    field :provide_stream, :stream do
+      # order: [lon, lat]
+      arg(:geog, list_of(:float))
+
+      resolve(&Resolvers.Content.provide_stream/3)
+    end
   end
 
   query do

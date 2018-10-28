@@ -6,7 +6,7 @@ import { StackActions, NavigationActions } from 'react-navigation'
 
 const CREATE_THREAD_MUTATION = gql`
 mutation CreateThread($message: String, $image: Upload, $latitude: Float, $longitude: Float) {
-  createThread(message: $message, image: $image, geog: [$latitude, $longitude]) {
+  createThread(message: $message, image: $image, geog: [$longitude, $latitude]) {
     id
     message
     votingScore

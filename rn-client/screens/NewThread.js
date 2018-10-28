@@ -58,8 +58,9 @@ export default class NewThread extends React.Component {
   async onCreateThread() {
     this.setState({ ...this.state, postingInProgress: true })
     const { message } = this.state
-
+    console.log('waiting for location ...')
     const location = await this.getLocationAsync()
+    console.log('got location')
     const { coords: { latitude, longitude } } = location
 
     console.log(location)
@@ -71,7 +72,8 @@ export default class NewThread extends React.Component {
 
   async getLocationAsync() {
     await Permissions.askAsync(Permissions.LOCATION)
-    return await Location.getCurrentPositionAsync({})
+
+    return await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { maximumAge: 20 * 60 * 1000, timeout: 10*100 }))
   }
 
   async onAttachImage() { 

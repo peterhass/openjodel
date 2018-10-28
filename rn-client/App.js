@@ -9,6 +9,7 @@ import NewThreadContainer from './screens/NewThreadContainer'
 import ThreadContainer from './screens/ThreadContainer'
 import StreamSelectionContainer from './screens/StreamSelectionContainer'
 import NewStreamContainer from './screens/NewStreamContainer'
+import HomeScreenLocator from './utils/HomeScreenLocator'
 
 const AppStack = createStackNavigator({
   Home: ThreadListContainer,
@@ -35,15 +36,24 @@ export default class App extends React.Component {
   constructor() {
     super()
     
+    this.homeScreenLocator = new HomeScreenLocator()
     this.state = {  }
   }
 
   componentDidMount() {
     buildClient().then(client => this.setState({ client }))
+    // TODO: move this elsewhere. if user is not authenticated, mutations could fail because of missing authentication
+    this.homeScreenLocator.start()
+  }
+
+  componentWillUnmount() {
+    this.homeScreenLocator.stop()
   }
 
   render() {
     const { client } = this.state
+    
+    this.homeScreenLocator.graphqlClient = client
     
     if (client === undefined)
       return (null)

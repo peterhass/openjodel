@@ -5,6 +5,9 @@ defmodule Openjodel.Streams.Query do
     Stream
   }
 
+  import Geo.PostGIS
+  import Ecto.Query
+
   def all do
     Stream
     |> Repo.all
@@ -12,6 +15,14 @@ defmodule Openjodel.Streams.Query do
 
   def find(id) do
     Stream |> Repo.get(id)
+  end
+
+  def containing_position(%Geo.Point{} = geog) do
+    # TODO: replace magic value 500 (stream radius)
+    Stream
+    |> from
+    |> where([s], st_dwithin(s.geog, ^geog, 500))
+    |> Repo.all
   end
 
   def containing_post(%Post{id: post_id}) do

@@ -89,7 +89,7 @@ subscription onPostAdded($threadId: ID) {
 
 const CREATE_POST_MUTATION = gql`
 mutation CreatePost($message: String, $parentId: ID, $image: Upload, $latitude: Float, $longitude: Float) {
-  createPost(message: $message, parentId: $parentId, image: $image, geog: [$latitude, $longitude]) {
+  createPost(message: $message, parentId: $parentId, image: $image, geog: [$longitude, $latitude]) {
     id
     message
     votingScore

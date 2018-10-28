@@ -48,6 +48,15 @@ defmodule OpenjodelWeb.Resolvers.Content do
     {:ok, Streams.Query.all()}
   end
 
+  def provide_stream(_, stream_attrs, %{context: %{current_user: current_user}}) do
+    IO.inspect(stream_attrs)
+    Streams.Provide.provide(current_user, convert_stream_attrs(stream_attrs))
+    |> case do
+      {:ok, stream} -> {:ok, stream}
+      {:error, e} -> throw(e)
+    end
+  end
+
   def create_stream(_, stream_attrs, %{context: %{current_user: current_user}}) do
     Streams.create(current_user, convert_stream_attrs(stream_attrs))
     |> case do

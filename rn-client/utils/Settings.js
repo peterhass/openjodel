@@ -36,6 +36,7 @@ class Setting {
   }
 
   async setAsync(value) {
+    // TODO: only notify if value is not the same as oldvalue
     if(value !== null)
       await SecureStore.setItemAsync(this.key, value)
     else

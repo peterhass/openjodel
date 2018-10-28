@@ -20,7 +20,12 @@ defmodule Openjodel.Mixfile do
   def application do
     [
       mod: {Openjodel.Application, []},
-      extra_applications: [:logger, :runtime_tools, :faker]
+      extra_applications: [
+        :logger, 
+        :runtime_tools, 
+        :faker, 
+        #   :geocoder
+      ]
     ]
   end
 
@@ -48,7 +53,8 @@ defmodule Openjodel.Mixfile do
       {:poison, "~> 3.1.0"},
       {:faker, "~> 0.10"},
       {:paginator, "~> 0.4"},
-      {:geo_postgis, "~> 2.0"}
+      {:geo_postgis, "~> 2.0"},
+      #      {:geocoder, github: "knrz/geocoder", ref: "64decdb"}
     ]
   end
 
