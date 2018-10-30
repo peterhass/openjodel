@@ -58,3 +58,4 @@ config :openjodel, Openjodel.Repo,
   database: "webappmitphoenix_dev",
   hostname: "localhost",
   pool_size: 10
+  #  loggers: []

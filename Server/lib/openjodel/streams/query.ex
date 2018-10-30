@@ -17,6 +17,20 @@ defmodule Openjodel.Streams.Query do
     Stream |> Repo.get(id)
   end
 
+  @doc """
+  Returns array of streams without any new posts in given number of days.
+  """
+  def unused_for_days_query(days) do
+    negated_days = days * -1    
+
+    from(
+      s in Stream, 
+      left_join: sp in assoc(s, :stream_posts), 
+      group_by: [s.id], 
+      having: max(sp.inserted_at) < datetime_add(^NaiveDateTime.utc_now, ^negated_days, "day")
+    ) 
+  end
+
   def containing_position(%Geo.Point{} = geog) do
     # TODO: replace magic value 500 (stream radius)
     Stream

@@ -14,23 +14,27 @@ config :openjodel, OpenjodelWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "cIC/CW1aiNno+ekdiDCbMx/Loz4rcX57KVR1puQnKzWwcKGZKm4QKq4NFGgn90p2",
   render_errors: [view: OpenjodelWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Openjodel.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Openjodel.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:user_id]
 
-  # config :geocoder, :worker_pool_config, [
-  #   size: 4,
-  #   max_overflow: 2
-  # ]
-  # 
-  # config :geocoder, :worker, [
-  #   provider: Geocoder.Providers.OpenStreetMaps
-  # ]
+# config :geocoder, :worker_pool_config, [
+#   size: 4,
+#   max_overflow: 2
+# ]
+# 
+# config :geocoder, :worker, [
+#   provider: Geocoder.Providers.OpenStreetMaps
+# ]
+
+config :openjodel, Openjodel.Scheduler,
+  jobs: [
+    {"@daily", {Openjodel.CleanupJob, :cleanup, []}}
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

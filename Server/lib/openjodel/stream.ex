@@ -1,4 +1,5 @@
 defmodule Openjodel.Stream do
+  alias Openjodel.{StreamPost}
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -6,6 +7,8 @@ defmodule Openjodel.Stream do
     field :inserted_at, :utc_datetime
     field :name, :string
     field :geog, Geo.PostGIS.Geometry
+
+    has_many :stream_posts, StreamPost
   end
 
   def changeset(%__MODULE__{} = stream, attrs) do

@@ -16,7 +16,9 @@ defmodule Openjodel.Application do
       # worker(Openjodel.Worker, [arg1, arg2, arg3]),
       supervisor(Absinthe.Subscription, [OpenjodelWeb.Endpoint]),
 
-      worker(OpenjodelWeb.Streams.Server, [])
+      worker(OpenjodelWeb.Streams.Server, []),
+
+      worker(Openjodel.Scheduler, [])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

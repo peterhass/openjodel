@@ -54,6 +54,8 @@ defmodule Openjodel.Mixfile do
       {:faker, "~> 0.10"},
       {:paginator, "~> 0.4"},
       {:geo_postgis, "~> 2.0"},
+      {:quantum, "~> 2.3"},
+      {:timex, "~> 3.0"}
       #      {:geocoder, github: "knrz/geocoder", ref: "64decdb"}
     ]
   end
