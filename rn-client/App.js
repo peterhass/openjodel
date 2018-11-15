@@ -9,6 +9,7 @@ import NewThreadContainer from './screens/NewThreadContainer'
 import ThreadContainer from './screens/ThreadContainer'
 import StreamSelectionContainer from './screens/StreamSelectionContainer'
 import NewStreamContainer from './screens/NewStreamContainer'
+import ThreadsMapContainer from './screens/ThreadsMapContainer'
 import HomeScreenLocator from './utils/HomeScreenLocator'
 
 const AppStack = createStackNavigator({
@@ -16,7 +17,8 @@ const AppStack = createStackNavigator({
   NewThread: NewThreadContainer,
   Thread: ThreadContainer,
   StreamSelection: StreamSelectionContainer,
-  NewStream: NewStreamContainer
+  NewStream: NewStreamContainer,
+  ThreadsMap: ThreadsMapContainer
 })
 
 const AuthStack = createStackNavigator({

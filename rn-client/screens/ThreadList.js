@@ -25,7 +25,13 @@ export class EmptyStream extends React.Component {
 
 export default class ThreadList extends React.Component {
   static navigationOptions = ({ navigation })  => ({
-    headerTitle: <StreamHeader stream={navigation.getParam('stream')} onPress={() => navigation.navigate('StreamSelection')} />
+    headerTitle: <StreamHeader stream={navigation.getParam('stream')} onPress={() => navigation.navigate('StreamSelection')} />,
+    headerRight: (
+      <TouchableHighlight
+        onPress={() => navigation.navigate('ThreadsMap')}>
+        <Ionicons name="md-map" size={32} color="blue" />
+      </TouchableHighlight>
+    )
   })
 
   constructor() {

@@ -24,6 +24,9 @@ query GetStream($id: ID, $cursor: CursorInput) {
         currentUserVotingScore
         parentId
         imageUrl
+        anonymizedGeog {
+          coordinates
+        }
         children {
           cursor {
             before
@@ -107,7 +110,6 @@ export default class ThreadListContainer extends React.Component {
     this.state = { streamId: null }
     
     this.setStreamId = (newStreamId) => this.setState({ streamId: newStreamId })
-    this.setStreamId = (newStreamId) => {console.log('new stream id: ', newStreamId); this.setState({ streamId: newStreamId })} 
   }
   
   componentDidMount() {
@@ -135,6 +137,7 @@ export default class ThreadListContainer extends React.Component {
         const { stream } = data
         const { stream: { posts: { posts, cursor } } } = data
 
+        console.log(posts);
         return (
          <Mutation mutation={VOTE_POST_MUTATION}>
             {votingMutation => (

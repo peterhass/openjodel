@@ -15,6 +15,7 @@ defmodule OpenjodelWeb.Schema.ContentTypes do
     field :image_url, :string
     field :current_user_voting_score, :integer
     field :participant, :participant
+    field :anonymized_geog, :geog
     # TODO: think about performance
     field :children, :paginated_posts do
       arg :cursor, :cursor_input
@@ -22,6 +23,11 @@ defmodule OpenjodelWeb.Schema.ContentTypes do
     end
   end
 
+  object :geog do
+    field :coordinates, list_of(:float)
+  end
+
+  
   object :stream do
     field :id, :id
     field :name, :string
